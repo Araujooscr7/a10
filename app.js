@@ -189,27 +189,35 @@ function handleLogin(event) {
     const email = document.getElementById('loginEmail').value;
     const password = document.getElementById('loginPassword').value;
     
+    // Simula carregamento
     const submitBtn = event.target.querySelector('button[type="submit"]');
     const originalText = submitBtn.innerHTML;
     submitBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Verificando...';
     submitBtn.disabled = true;
     
+    // Delay para parecer real
     setTimeout(() => {
+        // Verifica nas credenciais mockadas
         const user = mockData.users.find(u => 
             u.email === email && u.password === password
         );
         
         if (user) {
             mockData.currentUser = user;
+            
+            // Feedback visual de sucesso
             submitBtn.innerHTML = '<i class="fas fa-check"></i> Login bem-sucedido!';
             submitBtn.style.background = '#10b981';
             
+            // Redireciona para home
             setTimeout(() => {
                 showHomeScreen();
             }, 1000);
         } else {
+            // Feedback de erro
             submitBtn.innerHTML = originalText;
             submitBtn.disabled = false;
+            
             alert('Credenciais inválidas! Use as credenciais de demonstração.');
         }
     }, 1500);
@@ -226,7 +234,7 @@ function showForgotPassword() {
     alert('Sistema de recuperação de senha simulado. Um email seria enviado na versão real.');
 }
 
-// 7. HOME SCREEN PREMIUM (ÚNICA VERSÃO)
+// 7. HOME SCREEN PREMIUM
 function showHomeScreen() {
     const user = mockData.currentUser || { name: 'Visitante', role: 'guest' };
     const userName = user.name || 'Visitante';
@@ -312,7 +320,8 @@ function showHomeScreen() {
                             background: var(--light);
                         "
                         onfocus="this.style.width='350px'; this.style.background='white'; this.style.borderColor='var(--primary)';"
-                        onblur="this.style.width='300px'; this.style.background='var(--light)'; this.style.borderColor='#e2e8f0';">
+                        onblur="this.style.width='300px'; this.style.background='var(--light)'; this.style.borderColor='#e2e8f0';"
+                        >
                     </div>
                     
                     <!-- User Avatar -->
@@ -361,6 +370,7 @@ function showHomeScreen() {
                 overflow: hidden;
                 box-shadow: var(--shadow-lg);
             ">
+                <!-- Background Pattern -->
                 <div style="
                     position: absolute;
                     top: 0;
@@ -571,70 +581,13 @@ function showHomeScreen() {
         // Cursos clicáveis
         document.querySelectorAll('.course-card').forEach(card => {
             card.addEventListener('click', function() {
-                showCourseDetail(1);
+                showCourseDetail(1); // ID 1 para demonstração
             });
         });
     }, 100);
 }
 
-// 8. TELA SIMPLIFICADA DE DETALHES
-function showCourseDetail(courseId = 1) {
-    const app = document.getElementById('app');
-    
-    app.innerHTML = `
-        <div style="padding: 2rem; max-width: 800px; margin: 0 auto;">
-            <button onclick="showHomeScreen()" style="
-                background: none;
-                border: none;
-                font-size: 1.5rem;
-                color: var(--primary);
-                cursor: pointer;
-                margin-bottom: 2rem;
-            ">
-                <i class="fas fa-arrow-left"></i> Voltar
-            </button>
-            
-            <h1 style="color: var(--primary); margin-bottom: 1rem;">Judo Infantil (6-12 anos)</h1>
-            <p style="color: var(--gray); margin-bottom: 2rem;">Desenvolvimento físico e mental através das técnicas do Judô.</p>
-            
-            <div style="background: white; border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md);">
-                <h2 style="color: var(--dark); margin-bottom: 1.5rem;">Informações do Curso</h2>
-                
-                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
-                    <div style="background: var(--light); padding: 1rem; border-radius: var(--radius-md);">
-                        <div style="font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">Idade Mínima</div>
-                        <div style="color: var(--dark);">6 anos</div>
-                    </div>
-                    <div style="background: var(--light); padding: 1rem; border-radius: var(--radius-md);">
-                        <div style="font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">Idade Máxima</div>
-                        <div style="color: var(--dark);">12 anos</div>
-                    </div>
-                    <div style="background: var(--light); padding: 1rem; border-radius: var(--radius-md);">
-                        <div style="font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">Dias</div>
-                        <div style="color: var(--dark);">Segunda, Quarta, Sexta</div>
-                    </div>
-                    <div style="background: var(--light); padding: 1rem; border-radius: var(--radius-md);">
-                        <div style="font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">Horário</div>
-                        <div style="color: var(--dark);">14:00 - 15:30</div>
-                    </div>
-                </div>
-                
-                <div style="display: flex; gap: 1rem;">
-                    <button class="btn btn-primary" onclick="alert('Interesse registrado!')">
-                        <i class="fas fa-hand-paper"></i> Tenho Interesse
-                    </button>
-                    <button class="btn btn-secondary" onclick="alert('Adicionado aos favoritos!')">
-                        <i class="fas fa-heart"></i> Favoritar
-                    </button>
-                </div>
-            </div>
-        </div>
-    `;
-}
-
-// ===== FUNÇÕES AUXILIARES =====
-
-// Categorias HTML
+// Função auxiliar para Categorias HTML
 function getCategoriesHTML() {
     const categories = [
         { icon: 'fas fa-fist-raised', name: 'Artes Marciais', count: 12, color: 'var(--primary)' },
@@ -690,34 +643,37 @@ function getCategoriesHTML() {
     `).join('');
 }
 
-// Cursos em Destaque HTML
+// Função auxiliar para Cursos em Destaque HTML
 function getFeaturedCoursesHTML() {
     const courses = [
         {
             category: 'Artes Marciais',
             title: 'Judo Infantil (6-12 anos)',
-            description: 'Desenvolvimento físico e mental através das técnicas do Judô.',
+            description: 'Desenvolvimento físico e mental através das técnicas do Judô. Aprenda disciplina, respeito e autodefesa.',
             icon: 'fas fa-user-ninja',
             rating: 4.8,
             students: 45,
+            featured: true,
             color: 'var(--primary)'
         },
         {
             category: 'Música',
             title: 'Violão Popular - Iniciante',
-            description: 'Domine os acordes básicos e toque suas músicas favoritas.',
+            description: 'Domine os acordes básicos e toque suas músicas favoritas em 2 meses com professores especializados.',
             icon: 'fas fa-guitar',
             rating: 4.9,
             students: 32,
+            featured: true,
             color: 'var(--secondary)'
         },
         {
             category: 'Fitness',
             title: 'Funcional Training 50+',
-            description: 'Exercícios adaptados para melhorar qualidade de vida.',
+            description: 'Exercícios adaptados para melhorar mobilidade, força e qualidade de vida na melhor idade.',
             icon: 'fas fa-running',
             rating: 4.7,
             students: 28,
+            featured: true,
             color: 'var(--success)'
         }
     ];
@@ -730,9 +686,28 @@ function getFeaturedCoursesHTML() {
             box-shadow: var(--shadow-md);
             transition: all var(--transition-normal);
             cursor: pointer;
+            position: relative;
         "
         onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='var(--shadow-xl)'"
         onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'">
+            ${course.featured ? `
+                <div style="
+                    position: absolute;
+                    top: 1rem;
+                    right: 1rem;
+                    background: var(--gradient-accent);
+                    color: white;
+                    padding: 0.5rem 1rem;
+                    border-radius: var(--radius-full);
+                    font-size: 0.8rem;
+                    font-weight: 700;
+                    z-index: 2;
+                    box-shadow: var(--shadow-sm);
+                ">
+                    <i class="fas fa-star"></i> DESTAQUE
+                </div>
+            ` : ''}
+            
             <div style="
                 width: 100%;
                 height: 180px;
@@ -740,8 +715,25 @@ function getFeaturedCoursesHTML() {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                position: relative;
+                overflow: hidden;
             ">
-                <i class="${course.icon}" style="font-size: 3.5rem; color: white;"></i>
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-image: 
+                        radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+                "></div>
+                <i class="${course.icon}" style="
+                    font-size: 3.5rem;
+                    color: white;
+                    z-index: 1;
+                    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                "></i>
             </div>
             
             <div style="padding: 1.5rem;">
@@ -758,7 +750,7 @@ function getFeaturedCoursesHTML() {
                     ${course.category}
                 </div>
                 
-                <h3 style="
+                <h3 class="course-title" style="
                     font-family: 'Poppins', sans-serif;
                     font-size: 1.3rem;
                     font-weight: 700;
@@ -808,13 +800,13 @@ function getFeaturedCoursesHTML() {
     `).join('');
 }
 
-// Novidades HTML
+// Função auxiliar para Novidades HTML
 function getNewCoursesHTML() {
     const courses = [
         {
             category: 'Dança',
             title: 'Salsa & Bachata Social',
-            description: 'Aprenda os passos básicos e entre no mundo da dança latina.',
+            description: 'Aprenda os passos básicos e entre no mundo da dança latina. Aulas práticas com música ao vivo.',
             icon: 'fas fa-heart',
             rating: 4.6,
             students: 18,
@@ -823,7 +815,7 @@ function getNewCoursesHTML() {
         {
             category: 'Culinária',
             title: 'Culinária Vegana Básica',
-            description: 'Descubra como preparar refeições saborosas e nutritivas.',
+            description: 'Descubra como preparar refeições saborosas e nutritivas sem produtos de origem animal.',
             icon: 'fas fa-carrot',
             rating: 4.8,
             students: 24,
@@ -832,7 +824,7 @@ function getNewCoursesHTML() {
         {
             category: 'Idiomas',
             title: 'Inglês Conversação',
-            description: 'Pratique speaking e listening com professores nativos.',
+            description: 'Pratique speaking e listening com professores nativos em situações do dia a dia.',
             icon: 'fas fa-globe-americas',
             rating: 4.7,
             students: 36,
@@ -858,8 +850,27 @@ function getNewCoursesHTML() {
                 display: flex;
                 align-items: center;
                 justify-content: center;
+                position: relative;
             ">
-                <i class="${course.icon}" style="font-size: 3.5rem; color: white;"></i>
+                <div style="
+                    position: absolute;
+                    top: 1rem;
+                    left: 1rem;
+                    background: rgba(255, 255, 255, 0.2);
+                    backdrop-filter: blur(5px);
+                    color: white;
+                    padding: 0.25rem 0.75rem;
+                    border-radius: var(--radius-full);
+                    font-size: 0.8rem;
+                    font-weight: 600;
+                ">
+                    <i class="fas fa-bolt"></i> NOVO
+                </div>
+                <i class="${course.icon}" style="
+                    font-size: 3.5rem;
+                    color: white;
+                    text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                "></i>
             </div>
             
             <div style="padding: 1.5rem;">
@@ -908,6 +919,7 @@ function getNewCoursesHTML() {
                             <i class="fas fa-star"></i>
                             <span style="font-weight: 600;">${course.rating}</span>
                         </div>
+                        <div style="width: 1px; height: 20px; background: var(--light);"></div>
                         <div style="color: var(--gray); font-size: 0.9rem;">
                             <i class="fas fa-users"></i> ${course.students} alunos
                         </div>
@@ -920,4 +932,163 @@ function getNewCoursesHTML() {
                         <i class="fas fa-info-circle"></i> Detalhes
                     </button>
                 </div>
-            </
+            </div>
+        </div>
+    `).join('');
+}
+
+// Função auxiliar para Bottom Navigation
+function getBottomNavHTML() {
+    const navItems = [
+        { icon: 'fas fa-home', label: 'Home', active: true, onclick: 'showHomeScreen()' },
+        { icon: 'fas fa-book', label: 'Cursos', onclick: 'showCoursesScreen()' },
+        { icon: 'fas fa-heart', label: 'Favoritos', badge: 3, onclick: 'showFavoritesScreen()' },
+        { icon: 'fas fa-user', label: 'Perfil', onclick: 'showProfileScreen()' }
+    ];
+    
+    return navItems.map(item => `
+        <a class="nav-item" onclick="${item.onclick}" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: ${item.active ? 'var(--primary)' : 'var(--gray)'};
+            text-decoration: none;
+            position: relative;
+            min-width: 70px;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='${item.active ? 'var(--primary)' : 'var(--gray)'}'">
+            <i class="${item.icon}" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">${item.label}</span>
+            
+            ${item.badge ? `
+                <span style="
+                    position: absolute;
+                    top: 0.25rem;
+                    right: 0.5rem;
+                    background: var(--gradient-accent);
+                    color: white;
+                    width: 18px;
+                    height: 18px;
+                    border-radius: 50%;
+                    font-size: 0.7rem;
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    font-weight: 700;
+                ">
+                    ${item.badge}
+                </span>
+            ` : ''}
+        </a>
+    `).join('');
+}
+
+// 8. TELA DE DETALHES DO CURSO
+function showCourseDetail(courseId = 1) {
+    const course = {
+        id: courseId,
+        title: "Judo Infantil (6-12 anos)",
+        category: "Artes Marciais",
+        description: "Desenvolvimento físico e mental através das técnicas do Judô. Aprenda disciplina, respeito e autodefesa.",
+        
+        details: {
+            idadeMinima: 6,
+            idadeMaxima: 12,
+            dias: ["Segunda", "Quarta", "Sexta"],
+            horario: "14:00 - 15:30",
+            duracao: "12 semanas",
+            vagas: 20,
+            vagasDisponiveis: 8,
+            preco: "R$ 120,00/mês",
+            local: "Ginásio Principal - Sala 3"
+        },
+        
+        rating: 4.8,
+        totalAvaliacoes: 45
+    };
+    
+    const app = document.getElementById('app');
+    
+    app.innerHTML = `
+        <!-- Simple Course Detail -->
+        <div style="padding: 2rem; max-width: 800px; margin: 0 auto;">
+            <button onclick="showHomeScreen()" style="
+                background: none;
+                border: none;
+                font-size: 1.5rem;
+                color: var(--primary);
+                cursor: pointer;
+                margin-bottom: 2rem;
+            ">
+                <i class="fas fa-arrow-left"></i> Voltar
+            </button>
+            
+            <h1 style="color: var(--primary); margin-bottom: 1rem;">${course.title}</h1>
+            <p style="color: var(--gray); margin-bottom: 2rem;">${course.description}</p>
+            
+            <div style="background: white; border-radius: var(--radius-lg); padding: 2rem; box-shadow: var(--shadow-md);">
+                <h2 style="color: var(--dark); margin-bottom: 1.5rem;">Informações do Curso</h2>
+                
+                <div style="display: grid; grid-template-columns: repeat(2, 1fr); gap: 1rem; margin-bottom: 2rem;">
+                    ${Object.entries(course.details).map(([key, value]) => `
+                        <div style="background: var(--light); padding: 1rem; border-radius: var(--radius-md);">
+                            <div style="font-weight: 600; color: var(--primary); margin-bottom: 0.5rem;">
+                                ${key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                            </div>
+                            <div style="color: var(--dark);">${Array.isArray(value) ? value.join(', ') : value}</div>
+                        </div>
+                    `).join('')}
+                </div>
+                
+                <div style="display: flex; gap: 1rem;">
+                    <button class="btn btn-primary" onclick="alert('Interesse registrado!')">
+                        <i class="fas fa-hand-paper"></i> Tenho Interesse
+                    </button>
+                    <button class="btn btn-secondary" onclick="alert('Adicionado aos favoritos!')">
+                        <i class="fas fa-heart"></i> Favoritar
+                    </button>
+                    <button class="btn btn-outline" onclick="showHomeScreen()">
+                        <i class="fas fa-arrow-left"></i> Voltar para Home
+                    </button>
+                </div>
+            </div>
+        </div>
+    `;
+}
+
+// Funções auxiliares
+function showCategoryCourses(category) {
+    alert(`Mostrando cursos da categoria: ${category}\n\nEsta funcionalidade será implementada com:\n• Filtragem por categoria\n• Lista completa de cursos\n• Paginação`);
+}
+
+function showCoursesScreen() {
+    alert('Catálogo completo de cursos será implementado na próxima etapa!');
+}
+
+function showFavoritesScreen() {
+    alert('Tela de favoritos será implementada na próxima etapa!');
+}
+
+function showProfileScreen() {
+    alert('Tela de perfil será implementada na próxima etapa!');
+}
+
+// Funções globais para o HTML acessar
+window.showSplashScreen = showSplashScreen;
+window.showWelcomeScreen = showWelcomeScreen;
+window.showLoginScreen = showLoginScreen;
+window.showRegisterScreen = showRegisterScreen;
+window.showForgotPassword = showForgotPassword;
+window.showHomeScreen = showHomeScreen;
+window.showCoursesScreen = showCoursesScreen;
+window.showFavoritesScreen = showFavoritesScreen;
+window.showProfileScreen = showProfileScreen;
+window.showCourseDetail = showCourseDetail;
+window.showCategoryCourses = showCategoryCourses;
+window.handleLogin = handleLogin;
