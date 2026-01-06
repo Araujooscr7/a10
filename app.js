@@ -3184,7 +3184,2590 @@ function getProfileBottomNavHTML() {
         </a>
     `;
 }
+// ===== TELA DE FAVORITOS =====
+function showFavoritesScreen() {
+    const user = mockData.currentUser || getDefaultUser();
+    
+    // Dados mockados dos cursos favoritados
+    const favoriteCourses = [
+        {
+            id: 2,
+            title: "Funcional Training 50+",
+            category: "Fitness",
+            description: "Exercícios adaptados para melhorar mobilidade, força e qualidade de vida na melhor idade.",
+            icon: "fas fa-running",
+            rating: 4.7,
+            students: 28,
+            status: "ativo", // ativo, concluído, em_andamento
+            addedDate: "15/01/2024",
+            instructor: "Prof. Ana Costa"
+        },
+        {
+            id: 4,
+            title: "Salsa & Bachata Social",
+            category: "Dança",
+            description: "Aprenda os passos básicos e entre no mundo da dança latina. Aulas práticas com música ao vivo.",
+            icon: "fas fa-heart",
+            rating: 4.6,
+            students: 18,
+            status: "ativo",
+            addedDate: "12/01/2024",
+            instructor: "Prof. Carlos Mendez"
+        },
+        {
+            id: 5,
+            title: "Inglês Conversação - Intermediário",
+            category: "Idiomas",
+            description: "Pratique speaking e listening com professores nativos em situações do dia a dia.",
+            icon: "fas fa-globe-americas",
+            rating: 4.7,
+            students: 36,
+            status: "concluído",
+            addedDate: "10/01/2024",
+            instructor: "Prof. Sarah Johnson"
+        },
+        {
+            id: 9,
+            title: "Yoga Meditativo",
+            category: "Bem-estar",
+            description: "Pratique posturas de yoga combinadas com técnicas de meditação para redução do estresse.",
+            icon: "fas fa-spa",
+            rating: 4.9,
+            students: 42,
+            status: "em_andamento",
+            addedDate: "08/01/2024",
+            instructor: "Prof. Mariana Silva"
+        },
+        {
+            id: 10,
+            title: "Fotografia Digital Básica",
+            category: "Artes",
+            description: "Aprenda os fundamentos da fotografia digital, composição e edição de imagens.",
+            icon: "fas fa-camera",
+            rating: 4.8,
+            students: 25,
+            status: "ativo",
+            addedDate: "05/01/2024",
+            instructor: "Prof. Ricardo Alves"
+        }
+    ];
+    
+    // Contar por categoria
+    const categoryCount = {};
+    favoriteCourses.forEach(course => {
+        categoryCount[course.category] = (categoryCount[course.category] || 0) + 1;
+    });
+    
+    const app = document.getElementById('app');
+    
+    app.innerHTML = `
+        <!-- HEADER -->
+        <header class="app-header" style="
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(67, 97, 238, 0.1);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        ">
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 1200px;
+                margin: 0 auto;
+            ">
+                <!-- Logo e Botão Voltar -->
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button onclick="showHomeScreen()" style="
+                        background: none;
+                        border: none;
+                        font-size: 1.5rem;
+                        color: var(--primary);
+                        cursor: pointer;
+                        padding: 0.5rem;
+                        border-radius: var(--radius-md);
+                        transition: background-color var(--transition-normal);
+                    "
+                    onmouseover="this.style.backgroundColor='var(--light)'"
+                    onmouseout="this.style.backgroundColor='transparent'">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="
+                            background: var(--gradient-primary);
+                            width: 40px;
+                            height: 40px;
+                            border-radius: var(--radius-md);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 1.2rem;
+                        ">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div style="
+                                font-family: 'Poppins', sans-serif;
+                                font-weight: 700;
+                                font-size: 1.3rem;
+                                background: var(--gradient-primary);
+                                -webkit-background-clip: text;
+                                background-clip: text;
+                                color: transparent;
+                            ">
+                                Comunidade Ativa
+                            </div>
+                            <div style="
+                                font-size: 0.85rem;
+                                color: var(--gray);
+                                margin-top: 2px;
+                            ">
+                                Unidade Einstein
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Título com Contador -->
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <h1 style="
+                        font-family: 'Poppins', sans-serif;
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                        color: var(--dark);
+                    ">
+                        <i class="fas fa-heart" style="color: var(--accent);"></i> Meus Favoritos
+                    </h1>
+                    <span style="
+                        background: var(--gradient-accent);
+                        color: white;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: var(--radius-full);
+                        font-weight: 700;
+                        font-size: 0.9rem;
+                    ">
+                        ${favoriteCourses.length} cursos
+                    </span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- MAIN CONTENT -->
+        <main style="
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1200px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            padding-bottom: 100px;
+        ">
+            <!-- Header com Filtros -->
+            <section class="animate-fade-up" style="margin-bottom: 2.5rem;">
+                <div style="
+                    display: flex;
+                    justify-content: space-between;
+                    align-items: center;
+                    flex-wrap: wrap;
+                    gap: 1.5rem;
+                    background: white;
+                    border-radius: var(--radius-lg);
+                    padding: 1.5rem;
+                    box-shadow: var(--shadow-md);
+                ">
+                    <div>
+                        <h2 style="
+                            font-family: 'Poppins', sans-serif;
+                            font-size: 1.8rem;
+                            font-weight: 700;
+                            color: var(--dark);
+                            margin-bottom: 0.5rem;
+                        ">
+                            Cursos Salvos
+                        </h2>
+                        <p style="color: var(--gray);">
+                            Gerencie seus cursos favoritos e acesse rapidamente
+                        </p>
+                    </div>
+                    
+                    <!-- Filtros -->
+                    <div style="display: flex; gap: 1rem; flex-wrap: wrap;">
+                        <select style="
+                            padding: 0.75rem 1rem;
+                            border: 2px solid #e2e8f0;
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.95rem;
+                            color: var(--dark);
+                            background: white;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                            min-width: 180px;
+                        "
+                        onchange="filterFavorites('category', this.value)"
+                        onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 97, 238, 0.1)'"
+                        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                            <option value="all">Todas as categorias</option>
+                            ${Object.keys(categoryCount).map(cat => `
+                                <option value="${cat}">${cat} (${categoryCount[cat]})</option>
+                            `).join('')}
+                        </select>
+                        
+                        <select style="
+                            padding: 0.75rem 1rem;
+                            border: 2px solid #e2e8f0;
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.95rem;
+                            color: var(--dark);
+                            background: white;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                            min-width: 180px;
+                        "
+                        onchange="filterFavorites('status', this.value)"
+                        onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 97, 238, 0.1)'"
+                        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                            <option value="all">Todos os status</option>
+                            <option value="ativo">Ativos</option>
+                            <option value="em_andamento">Em andamento</option>
+                            <option value="concluído">Concluídos</option>
+                        </select>
+                        
+                        <button class="btn btn-outline" onclick="clearFavoritesFilters()">
+                            <i class="fas fa-filter-circle-xmark"></i> Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Lista de Favoritos -->
+            <section class="animate-fade-up">
+                ${favoriteCourses.length > 0 ? `
+                    <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                        ${favoriteCourses.map(course => `
+                            <div class="favorite-card" data-category="${course.category}" data-status="${course.status}" style="
+                                background: white;
+                                border-radius: var(--radius-lg);
+                                overflow: hidden;
+                                box-shadow: var(--shadow-md);
+                                transition: all var(--transition-normal);
+                                border: 2px solid transparent;
+                            "
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='var(--shadow-lg)'; this.style.borderColor='${getCategoryColor(course.category)}'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent'">
+                                <div style="
+                                    display: grid;
+                                    grid-template-columns: auto 1fr auto;
+                                    gap: 1.5rem;
+                                    padding: 1.5rem;
+                                    align-items: center;
+                                ">
+                                    <!-- Ícone e Status -->
+                                    <div style="
+                                        display: flex;
+                                        flex-direction: column;
+                                        align-items: center;
+                                        gap: 1rem;
+                                        min-width: 100px;
+                                    ">
+                                        <div style="
+                                            width: 70px;
+                                            height: 70px;
+                                            border-radius: var(--radius-lg);
+                                            background: ${getCategoryGradient(course.category)};
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            color: white;
+                                            font-size: 1.8rem;
+                                            box-shadow: 0 4px 12px ${getCategoryShadow(course.category)};
+                                        ">
+                                            <i class="${course.icon}"></i>
+                                        </div>
+                                        
+                                        <span style="
+                                            background: ${getStatusBackground(course.status)};
+                                            color: ${getStatusColor(course.status)};
+                                            padding: 0.25rem 0.75rem;
+                                            border-radius: var(--radius-full);
+                                            font-size: 0.8rem;
+                                            font-weight: 700;
+                                            text-transform: uppercase;
+                                            letter-spacing: 0.5px;
+                                        ">
+                                            ${getStatusText(course.status)}
+                                        </span>
+                                    </div>
+                                    
+                                    <!-- Informações do Curso -->
+                                    <div>
+                                        <div style="
+                                            display: inline-block;
+                                            background: ${getCategoryColor(course.category)}15;
+                                            color: ${getCategoryColor(course.category)};
+                                            padding: 0.25rem 0.75rem;
+                                            border-radius: var(--radius-full);
+                                            font-size: 0.85rem;
+                                            font-weight: 600;
+                                            margin-bottom: 0.5rem;
+                                        ">
+                                            ${course.category}
+                                        </div>
+                                        
+                                        <h3 style="
+                                            font-family: 'Poppins', sans-serif;
+                                            font-size: 1.4rem;
+                                            font-weight: 700;
+                                            color: var(--dark);
+                                            margin-bottom: 0.5rem;
+                                            line-height: 1.3;
+                                        ">
+                                            ${course.title}
+                                        </h3>
+                                        
+                                        <p style="
+                                            color: var(--gray);
+                                            line-height: 1.6;
+                                            margin-bottom: 1rem;
+                                            font-size: 0.95rem;
+                                        ">
+                                            ${course.description}
+                                        </p>
+                                        
+                                        <div style="
+                                            display: flex;
+                                            align-items: center;
+                                            gap: 1.5rem;
+                                            color: var(--gray);
+                                            font-size: 0.9rem;
+                                        ">
+                                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                                <i class="fas fa-star" style="color: #f59e0b;"></i>
+                                                <span style="font-weight: 600;">${course.rating}</span>
+                                            </div>
+                                            
+                                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                                <i class="fas fa-users"></i>
+                                                <span>${course.students} alunos</span>
+                                            </div>
+                                            
+                                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                                <i class="fas fa-chalkboard-teacher"></i>
+                                                <span>${course.instructor}</span>
+                                            </div>
+                                            
+                                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                                <i class="fas fa-calendar-plus"></i>
+                                                <span>Adicionado: ${course.addedDate}</span>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <!-- Ações -->
+                                    <div style="
+                                        display: flex;
+                                        flex-direction: column;
+                                        gap: 0.75rem;
+                                        min-width: 180px;
+                                    ">
+                                        <button class="btn btn-primary" onclick="openCourse(${course.id})">
+                                            <i class="fas fa-play-circle"></i> Acessar Curso
+                                        </button>
+                                        
+                                        <button class="btn btn-secondary" onclick="showCourseDetail(${course.id})">
+                                            <i class="fas fa-info-circle"></i> Ver Detalhes
+                                        </button>
+                                        
+                                        <button class="btn btn-outline" onclick="removeFromFavorites(${course.id}, this)">
+                                            <i class="fas fa-heart-broken"></i> Remover
+                                        </button>
+                                        
+                                        <button class="btn btn-outline" onclick="shareCourse(${course.id})" style="
+                                            display: flex;
+                                            align-items: center;
+                                            justify-content: center;
+                                            gap: 0.5rem;
+                                        ">
+                                            <i class="fas fa-share-alt"></i>
+                                            Compartilhar
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        `).join('')}
+                    </div>
+                ` : `
+                    <!-- Estado Vazio -->
+                    <div style="
+                        text-align: center;
+                        padding: 4rem 2rem;
+                        background: white;
+                        border-radius: var(--radius-xl);
+                        box-shadow: var(--shadow-md);
+                    ">
+                        <div style="
+                            font-size: 4rem;
+                            color: var(--light);
+                            margin-bottom: 1.5rem;
+                        ">
+                            <i class="fas fa-heart-broken"></i>
+                        </div>
+                        
+                        <h2 style="
+                            font-family: 'Poppins', sans-serif;
+                            font-size: 2rem;
+                            font-weight: 700;
+                            color: var(--dark);
+                            margin-bottom: 1rem;
+                        ">
+                            Nenhum curso favoritado
+                        </h2>
+                        
+                        <p style="
+                            color: var(--gray);
+                            max-width: 500px;
+                            margin: 0 auto 2rem;
+                            line-height: 1.6;
+                            font-size: 1.1rem;
+                        ">
+                            Você ainda não adicionou nenhum curso aos favoritos. 
+                            Explore nossa variedade de cursos e salve seus preferidos 
+                            para acessar rapidamente depois!
+                        </p>
+                        
+                        <div style="display: flex; gap: 1rem; justify-content: center;">
+                            <button class="btn btn-primary" onclick="showCoursesScreen()">
+                                <i class="fas fa-search"></i> Explorar Cursos
+                            </button>
+                            
+                            <button class="btn btn-accent" onclick="showHomeScreen()">
+                                <i class="fas fa-home"></i> Voltar para Home
+                            </button>
+                        </div>
+                    </div>
+                `}
+            </section>
+            
+            <!-- Estatísticas -->
+            ${favoriteCourses.length > 0 ? `
+                <section class="animate-fade-up" style="margin-top: 3rem;">
+                    <h2 style="
+                        font-family: 'Poppins', sans-serif;
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                        color: var(--dark);
+                        margin-bottom: 1.5rem;
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                    ">
+                        <div style="
+                            width: 40px;
+                            height: 40px;
+                            border-radius: var(--radius-md);
+                            background: var(--gradient-secondary);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                        ">
+                            <i class="fas fa-chart-pie"></i>
+                        </div>
+                        Estatísticas dos Favoritos
+                    </h2>
+                    
+                    <div style="
+                        display: grid;
+                        grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                        gap: 1.5rem;
+                    ">
+                        <!-- Total de Favoritos -->
+                        <div style="
+                            background: white;
+                            border-radius: var(--radius-lg);
+                            padding: 1.5rem;
+                            box-shadow: var(--shadow-md);
+                            text-align: center;
+                            border-top: 4px solid var(--primary);
+                        ">
+                            <div style="
+                                font-size: 2.5rem;
+                                color: var(--primary);
+                                margin-bottom: 0.5rem;
+                            ">
+                                <i class="fas fa-heart"></i>
+                            </div>
+                            <div style="
+                                font-size: 2rem;
+                                font-weight: 800;
+                                color: var(--dark);
+                                margin-bottom: 0.25rem;
+                            ">
+                                ${favoriteCourses.length}
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">
+                                Cursos Favoritados
+                            </div>
+                        </div>
+                        
+                        <!-- Por Categoria -->
+                        <div style="
+                            background: white;
+                            border-radius: var(--radius-lg);
+                            padding: 1.5rem;
+                            box-shadow: var(--shadow-md);
+                            text-align: center;
+                            border-top: 4px solid var(--success);
+                        ">
+                            <div style="
+                                font-size: 2.5rem;
+                                color: var(--success);
+                                margin-bottom: 0.5rem;
+                            ">
+                                <i class="fas fa-layer-group"></i>
+                            </div>
+                            <div style="
+                                font-size: 2rem;
+                                font-weight: 800;
+                                color: var(--dark);
+                                margin-bottom: 0.25rem;
+                            ">
+                                ${Object.keys(categoryCount).length}
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">
+                                Categorias Diferentes
+                            </div>
+                        </div>
+                        
+                        <!-- Mais Antigo -->
+                        <div style="
+                            background: white;
+                            border-radius: var(--radius-lg);
+                            padding: 1.5rem;
+                            box-shadow: var(--shadow-md);
+                            text-align: center;
+                            border-top: 4px solid var(--warning);
+                        ">
+                            <div style="
+                                font-size: 2.5rem;
+                                color: var(--warning);
+                                margin-bottom: 0.5rem;
+                            ">
+                                <i class="fas fa-calendar-alt"></i>
+                            </div>
+                            <div style="
+                                font-size: 1.5rem;
+                                font-weight: 800;
+                                color: var(--dark);
+                                margin-bottom: 0.25rem;
+                                line-height: 1.2;
+                            ">
+                                ${favoriteCourses.reduce((oldest, current) => 
+                                    new Date(current.addedDate.split('/').reverse().join('-')) < 
+                                    new Date(oldest.addedDate.split('/').reverse().join('-')) ? current : oldest
+                                ).addedDate}
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.9rem;">
+                                Adicionado Mais Antigo
+                            </div>
+                        </div>
+                        
+                        <!-- Status -->
+                        <div style="
+                            background: white;
+                            border-radius: var(--radius-lg);
+                            padding: 1.5rem;
+                            box-shadow: var(--shadow-md);
+                            text-align: center;
+                            border-top: 4px solid var(--accent);
+                        ">
+                            <div style="
+                                font-size: 2.5rem;
+                                color: var(--accent);
+                                margin-bottom: 0.5rem;
+                            ">
+                                <i class="fas fa-chart-line"></i>
+                            </div>
+                            <div style="
+                                display: flex;
+                                justify-content: center;
+                                gap: 0.5rem;
+                                flex-wrap: wrap;
+                            ">
+                                <span style="
+                                    background: var(--success);
+                                    color: white;
+                                    padding: 0.25rem 0.5rem;
+                                    border-radius: var(--radius-full);
+                                    font-size: 0.85rem;
+                                ">
+                                    ${favoriteCourses.filter(c => c.status === 'ativo').length} Ativos
+                                </span>
+                                <span style="
+                                    background: var(--warning);
+                                    color: white;
+                                    padding: 0.25rem 0.5rem;
+                                    border-radius: var(--radius-full);
+                                    font-size: 0.85rem;
+                                ">
+                                    ${favoriteCourses.filter(c => c.status === 'em_andamento').length} Andamento
+                                </span>
+                                <span style="
+                                    background: var(--primary);
+                                    color: white;
+                                    padding: 0.25rem 0.5rem;
+                                    border-radius: var(--radius-full);
+                                    font-size: 0.85rem;
+                                ">
+                                    ${favoriteCourses.filter(c => c.status === 'concluído').length} Concluídos
+                                </span>
+                            </div>
+                            <div style="color: var(--gray); font-size: 0.9rem; margin-top: 0.5rem;">
+                                Distribuição por Status
+                            </div>
+                        </div>
+                    </div>
+                </section>
+            ` : ''}
+        </main>
+        
+        <!-- BOTTOM NAV -->
+        <nav style="
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(67, 97, 238, 0.1);
+            padding: 0.75rem 0;
+            z-index: 1000;
+        ">
+            <div style="
+                display: flex;
+                justify-content: space-around;
+                max-width: 500px;
+                margin: 0 auto;
+            ">
+                ${getFavoritesBottomNavHTML()}
+            </div>
+        </nav>
+    `;
+}
 
+// ===== FUNÇÕES AUXILIARES DOS FAVORITOS =====
+
+// Obter cor da categoria
+function getCategoryColor(category) {
+    const colors = {
+        'Fitness': 'var(--success)',
+        'Dança': 'var(--accent)',
+        'Idiomas': 'var(--warning)',
+        'Bem-estar': 'var(--primary)',
+        'Artes': 'var(--secondary)',
+        'Artes Marciais': 'var(--danger)',
+        'Música': 'var(--info)',
+        'Culinária': 'var(--purple)'
+    };
+    return colors[category] || 'var(--gray)';
+}
+
+// Obter gradiente da categoria
+function getCategoryGradient(category) {
+    const color = getCategoryColor(category);
+    return `linear-gradient(135deg, ${color} 0%, ${color}99 100%)`;
+}
+
+// Obter sombra da categoria
+function getCategoryShadow(category) {
+    const color = getCategoryColor(category);
+    return color.replace('var(', '').replace(')', '') + '40';
+}
+
+// Obter texto do status
+function getStatusText(status) {
+    const texts = {
+        'ativo': 'Ativo',
+        'em_andamento': 'Em Andamento',
+        'concluído': 'Concluído'
+    };
+    return texts[status] || status;
+}
+
+// Obter cor do status
+function getStatusColor(status) {
+    const colors = {
+        'ativo': 'var(--success)',
+        'em_andamento': 'var(--warning)',
+        'concluído': 'var(--primary)'
+    };
+    return colors[status] || 'var(--gray)';
+}
+
+// Obter background do status
+function getStatusBackground(status) {
+    const color = getStatusColor(status);
+    return color + '15'; // Adiciona transparência
+}
+
+// Filtrar favoritos
+function filterFavorites(type, value) {
+    const cards = document.querySelectorAll('.favorite-card');
+    
+    cards.forEach(card => {
+        if (value === 'all') {
+            card.style.display = 'block';
+        } else {
+            const cardValue = card.getAttribute(`data-${type}`);
+            card.style.display = cardValue === value ? 'block' : 'none';
+        }
+    });
+    
+    // Feedback visual
+    const total = document.querySelectorAll('.favorite-card').length;
+    const visible = document.querySelectorAll('.favorite-card[style*="display: block"]').length;
+    
+    if (value !== 'all') {
+        showNotification(`Mostrando ${visible} de ${total} cursos`, 'info');
+    }
+}
+
+// Limpar filtros
+function clearFavoritesFilters() {
+    const selects = document.querySelectorAll('select');
+    selects.forEach(select => select.value = 'all');
+    
+    const cards = document.querySelectorAll('.favorite-card');
+    cards.forEach(card => card.style.display = 'block');
+    
+    showNotification('Filtros limpos', 'success');
+}
+
+// Remover dos favoritos
+function removeFromFavorites(courseId, button) {
+    if (confirm('Tem certeza que deseja remover este curso dos favoritos?')) {
+        // Simular remoção
+        const card = button.closest('.favorite-card');
+        card.style.animation = 'fadeOut 0.5s forwards';
+        
+        setTimeout(() => {
+            card.remove();
+            showNotification('Curso removido dos favoritos!', 'success');
+            
+            // Atualizar contador
+            const countElement = document.querySelector('.favorite-count');
+            if (countElement) {
+                const currentCount = parseInt(countElement.textContent);
+                countElement.textContent = currentCount - 1;
+            }
+        }, 500);
+    }
+}
+
+// Abrir curso
+function openCourse(courseId) {
+    showNotification(`Abrindo curso ID: ${courseId}...`, 'info');
+    setTimeout(() => {
+        showCourseDetail(courseId);
+    }, 500);
+}
+
+// Mostrar notificação
+function showNotification(message, type = 'info') {
+    // Criar elemento de notificação
+    const notification = document.createElement('div');
+    notification.innerHTML = `
+        <div style="
+            position: fixed;
+            top: 100px;
+            right: 20px;
+            background: ${type === 'success' ? 'var(--success)' : type === 'error' ? 'var(--danger)' : 'var(--primary)'};
+            color: white;
+            padding: 1rem 1.5rem;
+            border-radius: var(--radius-md);
+            box-shadow: var(--shadow-lg);
+            z-index: 9999;
+            animation: slideInRight 0.3s, fadeOut 0.5s 2.5s forwards;
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            max-width: 350px;
+        ">
+            <i class="fas fa-${type === 'success' ? 'check-circle' : type === 'error' ? 'exclamation-circle' : 'info-circle'}"></i>
+            <span>${message}</span>
+        </div>
+    `;
+    
+    document.body.appendChild(notification);
+    
+    // Remover após 3 segundos
+    setTimeout(() => {
+        if (notification.parentNode) {
+            notification.parentNode.removeChild(notification);
+        }
+    }, 3000);
+}
+
+// Bottom Navigation específica dos favoritos
+function getFavoritesBottomNavHTML() {
+    return `
+        <a class="nav-item" onclick="showHomeScreen()" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--gray);
+            text-decoration: none;
+            min-width: 70px;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--gray)'">
+            <i class="fas fa-home" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Home</span>
+        </a>
+        
+        <a class="nav-item" onclick="showCoursesScreen()" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--gray);
+            text-decoration: none;
+            min-width: 70px;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--gray)'">
+            <i class="fas fa-book" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Cursos</span>
+        </a>
+        
+        <a class="nav-item active" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--accent);
+            text-decoration: none;
+            min-width: 70px;
+            background: var(--light);
+            position: relative;
+        ">
+            <i class="fas fa-heart" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Favoritos</span>
+            <span style="
+                position: absolute;
+                top: 0.25rem;
+                right: 0.5rem;
+                background: var(--gradient-accent);
+                color: white;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                font-size: 0.7rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+            " class="favorite-count">
+                5
+            </span>
+        </a>
+        
+        <a class="nav-item" onclick="showProfileScreen()" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--gray);
+            text-decoration: none;
+            min-width: 70px;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--gray)'">
+            <i class="fas fa-user" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Perfil</span>
+        </a>
+    `;
+}
+// ===== CATÁLOGO COMPLETO DE CURSOS =====
+function showCoursesScreen() {
+    // Dados mockados dos cursos
+    const allCourses = [
+        {
+            id: 1,
+            title: "Judo Infantil (6-12 anos)",
+            category: "Artes Marciais",
+            subcategory: "Lutas",
+            description: "Desenvolvimento físico e mental através das técnicas do Judô.",
+            icon: "fas fa-user-ninja",
+            rating: 4.8,
+            students: 45,
+            price: 120,
+            priceType: "mensal",
+            duration: "12 semanas",
+            modality: "Presencial",
+            level: "Iniciante",
+            featured: true,
+            new: false,
+            vacancies: 8,
+            instructor: "Prof. Carlos Silva",
+            schedule: "Seg/Qua/Sex - 14:00-15:30"
+        },
+        {
+            id: 2,
+            title: "Funcional Training 50+",
+            category: "Fitness",
+            subcategory: "Condicionamento",
+            description: "Exercícios adaptados para melhorar mobilidade e qualidade de vida.",
+            icon: "fas fa-running",
+            rating: 4.7,
+            students: 28,
+            price: 90,
+            priceType: "mensal",
+            duration: "16 semanas",
+            modality: "Presencial",
+            level: "Todos os níveis",
+            featured: true,
+            new: false,
+            vacancies: 12,
+            instructor: "Prof. Ana Costa",
+            schedule: "Ter/Qui - 09:00-10:00"
+        },
+        {
+            id: 3,
+            title: "Violão Popular - Nível Iniciante",
+            category: "Música",
+            subcategory: "Instrumentos",
+            description: "Domine os acordes básicos e toque suas músicas favoritas.",
+            icon: "fas fa-guitar",
+            rating: 4.9,
+            students: 32,
+            price: 150,
+            priceType: "mensal",
+            duration: "8 semanas",
+            modality: "Presencial",
+            level: "Iniciante",
+            featured: false,
+            new: true,
+            vacancies: 5,
+            instructor: "Prof. Marcos Lima",
+            schedule: "Seg/Qua - 19:00-20:30"
+        },
+        {
+            id: 4,
+            title: "Salsa & Bachata Social",
+            category: "Dança",
+            subcategory: "Danças Latinas",
+            description: "Aprenda os passos básicos e entre no mundo da dança latina.",
+            icon: "fas fa-heart",
+            rating: 4.6,
+            students: 18,
+            price: 100,
+            priceType: "mensal",
+            duration: "10 semanas",
+            modality: "Presencial",
+            level: "Iniciante",
+            featured: false,
+            new: true,
+            vacancies: 15,
+            instructor: "Prof. Carlos Mendez",
+            schedule: "Ter/Qui - 20:00-21:30"
+        },
+        {
+            id: 5,
+            title: "Inglês Conversação - Intermediário",
+            category: "Idiomas",
+            subcategory: "Inglês",
+            description: "Pratique speaking e listening com professores nativos.",
+            icon: "fas fa-globe-americas",
+            rating: 4.7,
+            students: 36,
+            price: 200,
+            priceType: "mensal",
+            duration: "24 semanas",
+            modality: "Online",
+            level: "Intermediário",
+            featured: false,
+            new: false,
+            vacancies: 20,
+            instructor: "Prof. Sarah Johnson",
+            schedule: "Seg/Qua/Sex - 18:00-19:30"
+        },
+        {
+            id: 6,
+            title: "Culinária Vegana Básica",
+            category: "Culinária",
+            subcategory: "Gastronomia",
+            description: "Descubra como preparar refeições saborosas sem produtos animais.",
+            icon: "fas fa-carrot",
+            rating: 4.8,
+            students: 24,
+            price: 180,
+            priceType: "mensal",
+            duration: "6 semanas",
+            modality: "Híbrido",
+            level: "Iniciante",
+            featured: false,
+            new: true,
+            vacancies: 10,
+            instructor: "Prof. Sofia Martins",
+            schedule: "Sábados - 10:00-13:00"
+        },
+        {
+            id: 7,
+            title: "Yoga Meditativo",
+            category: "Bem-estar",
+            subcategory: "Yoga",
+            description: "Pratique posturas de yoga combinadas com técnicas de meditação.",
+            icon: "fas fa-spa",
+            rating: 4.9,
+            students: 42,
+            price: 80,
+            priceType: "mensal",
+            duration: "12 semanas",
+            modality: "Presencial",
+            level: "Todos os níveis",
+            featured: true,
+            new: false,
+            vacancies: 6,
+            instructor: "Prof. Mariana Silva",
+            schedule: "Ter/Qui - 07:00-08:00"
+        },
+        {
+            id: 8,
+            title: "Fotografia Digital Básica",
+            category: "Artes",
+            subcategory: "Fotografia",
+            description: "Aprenda os fundamentos da fotografia digital e edição de imagens.",
+            icon: "fas fa-camera",
+            rating: 4.8,
+            students: 25,
+            price: 220,
+            priceType: "mensal",
+            duration: "14 semanas",
+            modality: "Híbrido",
+            level: "Iniciante",
+            featured: false,
+            new: false,
+            vacancies: 8,
+            instructor: "Prof. Ricardo Alves",
+            schedule: "Qua/Sex - 19:00-21:00"
+        },
+        {
+            id: 9,
+            title: "Dança Contemporânea",
+            category: "Dança",
+            subcategory: "Dança Artística",
+            description: "Explore a expressão corporal através da dança contemporânea.",
+            icon: "fas fa-user-friends",
+            rating: 4.5,
+            students: 16,
+            price: 110,
+            priceType: "mensal",
+            duration: "16 semanas",
+            modality: "Presencial",
+            level: "Intermediário",
+            featured: false,
+            new: true,
+            vacancies: 12,
+            instructor: "Prof. Beatriz Santos",
+            schedule: "Seg/Qua - 18:00-19:30"
+        },
+        {
+            id: 10,
+            title: "Programação para Iniciantes",
+            category: "Tecnologia",
+            subcategory: "Programação",
+            description: "Introdução aos conceitos básicos de programação e lógica.",
+            icon: "fas fa-laptop-code",
+            rating: 4.7,
+            students: 38,
+            price: 250,
+            priceType: "mensal",
+            duration: "20 semanas",
+            modality: "Online",
+            level: "Iniciante",
+            featured: true,
+            new: false,
+            vacancies: 25,
+            instructor: "Prof. João Tech",
+            schedule: "Ter/Qui - 20:00-22:00"
+        },
+        {
+            id: 11,
+            title: "Tai Chi Chuan para Iniciantes",
+            category: "Artes Marciais",
+            subcategory: "Artes Suaves",
+            description: "Arte marcial chinesa para equilíbrio físico e mental.",
+            icon: "fas fa-leaf",
+            rating: 4.6,
+            students: 22,
+            price: 95,
+            priceType: "mensal",
+            duration: "12 semanas",
+            modality: "Presencial",
+            level: "Iniciante",
+            featured: false,
+            new: true,
+            vacancies: 10,
+            instructor: "Prof. Li Wang",
+            schedule: "Seg/Qua/Sex - 08:00-09:00"
+        },
+        {
+            id: 12,
+            title: "Introdução ao Piano",
+            category: "Música",
+            subcategory: "Instrumentos",
+            description: "Aprenda as bases do piano e toque suas primeiras músicas.",
+            icon: "fas fa-music",
+            rating: 4.8,
+            students: 20,
+            price: 170,
+            priceType: "mensal",
+            duration: "16 semanas",
+            modality: "Presencial",
+            level: "Iniciante",
+            featured: false,
+            new: false,
+            vacancies: 6,
+            instructor: "Prof. Clara Keys",
+            schedule: "Ter/Qui - 17:00-18:30"
+        }
+    ];
+    
+    // Categorias únicas para filtros
+    const categories = [...new Set(allCourses.map(c => c.category))];
+    const subcategories = [...new Set(allCourses.map(c => c.subcategory))];
+    const modalities = [...new Set(allCourses.map(c => c.modality))];
+    const levels = [...new Set(allCourses.map(c => c.level))];
+    
+    const app = document.getElementById('app');
+    
+    app.innerHTML = `
+        <!-- HEADER -->
+        <header class="app-header" style="
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(67, 97, 238, 0.1);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        ">
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 1200px;
+                margin: 0 auto;
+            ">
+                <!-- Logo e Botão Voltar -->
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button onclick="showHomeScreen()" style="
+                        background: none;
+                        border: none;
+                        font-size: 1.5rem;
+                        color: var(--primary);
+                        cursor: pointer;
+                        padding: 0.5rem;
+                        border-radius: var(--radius-md);
+                        transition: background-color var(--transition-normal);
+                    "
+                    onmouseover="this.style.backgroundColor='var(--light)'"
+                    onmouseout="this.style.backgroundColor='transparent'">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="
+                            background: var(--gradient-primary);
+                            width: 40px;
+                            height: 40px;
+                            border-radius: var(--radius-md);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 1.2rem;
+                        ">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div style="
+                                font-family: 'Poppins', sans-serif;
+                                font-weight: 700;
+                                font-size: 1.3rem;
+                                background: var(--gradient-primary);
+                                -webkit-background-clip: text;
+                                background-clip: text;
+                                color: transparent;
+                            ">
+                                Comunidade Ativa
+                            </div>
+                            <div style="
+                                font-size: 0.85rem;
+                                color: var(--gray);
+                                margin-top: 2px;
+                            ">
+                                Unidade Einstein
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Título com Contador -->
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <h1 style="
+                        font-family: 'Poppins', sans-serif;
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                        color: var(--dark);
+                    ">
+                        <i class="fas fa-book" style="color: var(--primary);"></i> Catálogo de Cursos
+                    </h1>
+                    <span style="
+                        background: var(--gradient-primary);
+                        color: white;
+                        padding: 0.25rem 0.75rem;
+                        border-radius: var(--radius-full);
+                        font-weight: 700;
+                        font-size: 0.9rem;
+                    ">
+                        ${allCourses.length} cursos
+                    </span>
+                </div>
+            </div>
+        </header>
+        
+        <!-- MAIN CONTENT -->
+        <main style="
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1400px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            padding-bottom: 100px;
+        ">
+            <!-- Barra de Busca e Filtros -->
+            <section class="animate-fade-up" style="margin-bottom: 2.5rem;">
+                <div style="
+                    background: white;
+                    border-radius: var(--radius-lg);
+                    padding: 1.5rem;
+                    box-shadow: var(--shadow-md);
+                ">
+                    <!-- Barra de Busca -->
+                    <div style="margin-bottom: 1.5rem;">
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            gap: 1rem;
+                        ">
+                            <div style="position: relative; flex: 1;">
+                                <i class="fas fa-search" style="
+                                    position: absolute;
+                                    left: 1rem;
+                                    top: 50%;
+                                    transform: translateY(-50%);
+                                    color: var(--gray-light);
+                                "></i>
+                                <input 
+                                    type="text" 
+                                    id="courseSearch"
+                                    placeholder="Buscar por nome, categoria, professor..."
+                                    style="
+                                        padding: 0.875rem 1rem 0.875rem 3rem;
+                                        border: 2px solid #e2e8f0;
+                                        border-radius: var(--radius-full);
+                                        font-family: 'Inter', sans-serif;
+                                        font-size: 1rem;
+                                        width: 100%;
+                                        transition: all var(--transition-normal);
+                                    "
+                                    onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 97, 238, 0.1)'"
+                                    onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'"
+                                    onkeyup="searchCourses()"
+                                >
+                            </div>
+                            
+                            <!-- Visualização -->
+                            <div style="display: flex; gap: 0.5rem;">
+                                <button id="viewGrid" onclick="changeView('grid')" style="
+                                    padding: 0.75rem;
+                                    border: 2px solid var(--primary);
+                                    background: var(--primary);
+                                    color: white;
+                                    border-radius: var(--radius-md);
+                                    cursor: pointer;
+                                    transition: all var(--transition-normal);
+                                ">
+                                    <i class="fas fa-th-large"></i>
+                                </button>
+                                
+                                <button id="viewList" onclick="changeView('list')" style="
+                                    padding: 0.75rem;
+                                    border: 2px solid #e2e8f0;
+                                    background: white;
+                                    color: var(--gray);
+                                    border-radius: var(--radius-md);
+                                    cursor: pointer;
+                                    transition: all var(--transition-normal);
+                                "
+                                onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'"
+                                onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='var(--gray)'">
+                                    <i class="fas fa-list"></i>
+                                </button>
+                            </div>
+                            
+                            <!-- Ordenação -->
+                            <select id="sortCourses" onchange="sortCourses()" style="
+                                padding: 0.75rem 1rem;
+                                border: 2px solid #e2e8f0;
+                                border-radius: var(--radius-md);
+                                font-family: 'Inter', sans-serif;
+                                font-size: 0.95rem;
+                                color: var(--dark);
+                                background: white;
+                                cursor: pointer;
+                                transition: all var(--transition-normal);
+                                min-width: 180px;
+                            "
+                            onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 97, 238, 0.1)'"
+                            onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                                <option value="relevance">Ordenar por: Relevância</option>
+                                <option value="rating">Maior avaliação</option>
+                                <option value="price_asc">Menor preço</option>
+                                <option value="price_desc">Maior preço</option>
+                                <option value="newest">Mais recentes</option>
+                                <option value="students">Mais populares</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Filtros -->
+                    <div style="
+                        display: flex;
+                        flex-wrap: wrap;
+                        gap: 1rem;
+                        align-items: center;
+                    ">
+                        <span style="
+                            font-weight: 600;
+                            color: var(--dark);
+                            font-size: 0.95rem;
+                        ">
+                            <i class="fas fa-filter"></i> Filtrar por:
+                        </span>
+                        
+                        <!-- Filtro: Categoria -->
+                        <select id="filterCategory" onchange="filterCourses()" style="
+                            padding: 0.625rem 1rem;
+                            border: 2px solid #e2e8f0;
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.9rem;
+                            color: var(--dark);
+                            background: white;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                        "
+                        onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 97, 238, 0.1)'"
+                        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                            <option value="all">Todas categorias</option>
+                            ${categories.map(cat => `
+                                <option value="${cat}">${cat}</option>
+                            `).join('')}
+                        </select>
+                        
+                        <!-- Filtro: Modalidade -->
+                        <select id="filterModality" onchange="filterCourses()" style="
+                            padding: 0.625rem 1rem;
+                            border: 2px solid #e2e8f0;
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.9rem;
+                            color: var(--dark);
+                            background: white;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                        "
+                        onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 97, 238, 0.1)'"
+                        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                            <option value="all">Todas modalidades</option>
+                            ${modalities.map(mod => `
+                                <option value="${mod}">${mod}</option>
+                            `).join('')}
+                        </select>
+                        
+                        <!-- Filtro: Preço -->
+                        <select id="filterPrice" onchange="filterCourses()" style="
+                            padding: 0.625rem 1rem;
+                            border: 2px solid #e2e8f0;
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.9rem;
+                            color: var(--dark);
+                            background: white;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                        "
+                        onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 97, 238, 0.1)'"
+                        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                            <option value="all">Qualquer preço</option>
+                            <option value="0">Gratuito</option>
+                            <option value="100">Até R$ 100</option>
+                            <option value="200">Até R$ 200</option>
+                            <option value="300">Até R$ 300</option>
+                            <option value="300+">Acima de R$ 300</option>
+                        </select>
+                        
+                        <!-- Filtro: Duração -->
+                        <select id="filterDuration" onchange="filterCourses()" style="
+                            padding: 0.625rem 1rem;
+                            border: 2px solid #e2e8f0;
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.9rem;
+                            color: var(--dark);
+                            background: white;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                        "
+                        onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 97, 238, 0.1)'"
+                        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                            <option value="all">Qualquer duração</option>
+                            <option value="short">Curta (até 8 semanas)</option>
+                            <option value="medium">Média (9-16 semanas)</option>
+                            <option value="long">Longa (17+ semanas)</option>
+                        </select>
+                        
+                        <!-- Filtro: Nível -->
+                        <select id="filterLevel" onchange="filterCourses()" style="
+                            padding: 0.625rem 1rem;
+                            border: 2px solid #e2e8f0;
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.9rem;
+                            color: var(--dark);
+                            background: white;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                        "
+                        onfocus="this.style.borderColor='var(--primary)'; this.style.boxShadow='0 0 0 3px rgba(67, 97, 238, 0.1)'"
+                        onblur="this.style.borderColor='#e2e8f0'; this.style.boxShadow='none'">
+                            <option value="all">Todos os níveis</option>
+                            ${levels.map(lvl => `
+                                <option value="${lvl}">${lvl}</option>
+                            `).join('')}
+                        </select>
+                        
+                        <!-- Botão Limpar Filtros -->
+                        <button onclick="clearCourseFilters()" style="
+                            padding: 0.625rem 1rem;
+                            border: 2px solid var(--danger);
+                            background: white;
+                            color: var(--danger);
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.9rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                        "
+                        onmouseover="this.style.backgroundColor='var(--danger)'; this.style.color='white'"
+                        onmouseout="this.style.backgroundColor='white'; this.style.color='var(--danger)'">
+                            <i class="fas fa-filter-circle-xmark"></i>
+                            Limpar Filtros
+                        </button>
+                    </div>
+                </div>
+            </section>
+            
+            <!-- Resultados e Contador -->
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                margin-bottom: 1.5rem;
+            ">
+                <div>
+                    <h2 style="
+                        font-family: 'Poppins', sans-serif;
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                        color: var(--dark);
+                    ">
+                        Cursos Disponíveis
+                    </h2>
+                    <p style="color: var(--gray); font-size: 0.95rem;">
+                        Encontre o curso perfeito para você
+                    </p>
+                </div>
+                
+                <div id="resultsCount" style="
+                    background: var(--light);
+                    padding: 0.5rem 1rem;
+                    border-radius: var(--radius-full);
+                    font-weight: 600;
+                    color: var(--primary);
+                ">
+                    ${allCourses.length} cursos encontrados
+                </div>
+            </div>
+            
+            <!-- Lista de Cursos (GRID por padrão) -->
+            <section id="coursesContainer" class="animate-fade-up">
+                <div id="coursesGrid" style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fill, minmax(350px, 1fr));
+                    gap: 2rem;
+                ">
+                    ${allCourses.map(course => createCourseCardHTML(course, 'grid')).join('')}
+                </div>
+                
+                <!-- Versão LISTA (hidden por padrão) -->
+                <div id="coursesList" style="display: none; flex-direction: column; gap: 1.5rem;">
+                    ${allCourses.map(course => createCourseCardHTML(course, 'list')).join('')}
+                </div>
+            </section>
+            
+            <!-- Paginação -->
+            ${allCourses.length > 6 ? `
+                <section class="animate-fade-up" style="margin-top: 3rem;">
+                    <div style="
+                        display: flex;
+                        justify-content: center;
+                        align-items: center;
+                        gap: 1rem;
+                    ">
+                        <button onclick="previousPage()" style="
+                            padding: 0.75rem 1.25rem;
+                            border: 2px solid #e2e8f0;
+                            background: white;
+                            color: var(--gray);
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.95rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                        "
+                        onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'"
+                        onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='var(--gray)'">
+                            <i class="fas fa-chevron-left"></i>
+                            Anterior
+                        </button>
+                        
+                        <div style="display: flex; gap: 0.5rem;">
+                            <button class="page-btn active" onclick="goToPage(1)" style="
+                                width: 40px;
+                                height: 40px;
+                                border: 2px solid var(--primary);
+                                background: var(--primary);
+                                color: white;
+                                border-radius: var(--radius-md);
+                                font-weight: 700;
+                                cursor: pointer;
+                                transition: all var(--transition-normal);
+                            ">
+                                1
+                            </button>
+                            
+                            <button class="page-btn" onclick="goToPage(2)" style="
+                                width: 40px;
+                                height: 40px;
+                                border: 2px solid #e2e8f0;
+                                background: white;
+                                color: var(--gray);
+                                border-radius: var(--radius-md);
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all var(--transition-normal);
+                            "
+                            onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='var(--gray)'">
+                                2
+                            </button>
+                            
+                            <span style="
+                                display: flex;
+                                align-items: center;
+                                color: var(--gray);
+                                padding: 0 0.5rem;
+                            ">
+                                ...
+                            </span>
+                            
+                            <button class="page-btn" onclick="goToPage(3)" style="
+                                width: 40px;
+                                height: 40px;
+                                border: 2px solid #e2e8f0;
+                                background: white;
+                                color: var(--gray);
+                                border-radius: var(--radius-md);
+                                font-weight: 600;
+                                cursor: pointer;
+                                transition: all var(--transition-normal);
+                            "
+                            onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'"
+                            onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='var(--gray)'">
+                                3
+                            </button>
+                        </div>
+                        
+                        <button onclick="nextPage()" style="
+                            padding: 0.75rem 1.25rem;
+                            border: 2px solid #e2e8f0;
+                            background: white;
+                            color: var(--gray);
+                            border-radius: var(--radius-md);
+                            font-family: 'Inter', sans-serif;
+                            font-size: 0.95rem;
+                            font-weight: 600;
+                            cursor: pointer;
+                            transition: all var(--transition-normal);
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                        "
+                        onmouseover="this.style.borderColor='var(--primary)'; this.style.color='var(--primary)'"
+                        onmouseout="this.style.borderColor='#e2e8f0'; this.style.color='var(--gray)'">
+                            Próxima
+                            <i class="fas fa-chevron-right"></i>
+                        </button>
+                    </div>
+                </section>
+            ` : ''}
+            
+            <!-- Categorias Populares -->
+            <section class="animate-fade-up" style="margin-top: 4rem;">
+                <h2 style="
+                    font-family: 'Poppins', sans-serif;
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    color: var(--dark);
+                    margin-bottom: 1.5rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                ">
+                    <div style="
+                        width: 40px;
+                        height: 40px;
+                        border-radius: var(--radius-md);
+                        background: var(--gradient-secondary);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                    ">
+                        <i class="fas fa-layer-group"></i>
+                    </div>
+                    Explore por Categoria
+                </h2>
+                
+                <div style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+                    gap: 1.5rem;
+                ">
+                    ${categories.map(category => {
+                        const catCourses = allCourses.filter(c => c.category === category);
+                        const iconMap = {
+                            'Artes Marciais': 'fas fa-fist-raised',
+                            'Fitness': 'fas fa-dumbbell',
+                            'Música': 'fas fa-music',
+                            'Dança': 'fas fa-heart',
+                            'Idiomas': 'fas fa-globe-americas',
+                            'Culinária': 'fas fa-carrot',
+                            'Bem-estar': 'fas fa-spa',
+                            'Artes': 'fas fa-paint-brush',
+                            'Tecnologia': 'fas fa-laptop-code'
+                        };
+                        
+                        return `
+                            <div class="category-card-big" onclick="filterByCategory('${category}')" style="
+                                background: white;
+                                border-radius: var(--radius-lg);
+                                padding: 1.5rem;
+                                box-shadow: var(--shadow-md);
+                                cursor: pointer;
+                                transition: all var(--transition-normal);
+                                border: 2px solid transparent;
+                                text-align: center;
+                            "
+                            onmouseover="this.style.transform='translateY(-5px)'; this.style.boxShadow='var(--shadow-lg)'; this.style.borderColor='var(--primary)'"
+                            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'; this.style.borderColor='transparent'">
+                                <div style="
+                                    font-size: 2.5rem;
+                                    color: var(--primary);
+                                    margin-bottom: 1rem;
+                                ">
+                                    <i class="${iconMap[category] || 'fas fa-book'}"></i>
+                                </div>
+                                
+                                <h3 style="
+                                    font-family: 'Poppins', sans-serif;
+                                    font-size: 1.2rem;
+                                    font-weight: 700;
+                                    color: var(--dark);
+                                    margin-bottom: 0.5rem;
+                                ">
+                                    ${category}
+                                </h3>
+                                
+                                <div style="
+                                    font-size: 0.9rem;
+                                    color: var(--gray);
+                                    background: var(--light);
+                                    padding: 0.25rem 0.75rem;
+                                    border-radius: var(--radius-full);
+                                    display: inline-block;
+                                ">
+                                    ${catCourses.length} cursos
+                                </div>
+                            </div>
+                        `;
+                    }).join('')}
+                </div>
+            </section>
+        </main>
+        
+        <!-- BOTTOM NAV -->
+        <nav style="
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(67, 97, 238, 0.1);
+            padding: 0.75rem 0;
+            z-index: 1000;
+        ">
+            <div style="
+                display: flex;
+                justify-content: space-around;
+                max-width: 500px;
+                margin: 0 auto;
+            ">
+                ${getCoursesBottomNavHTML()}
+            </div>
+        </nav>
+    `;
+    
+    // Inicializar variáveis de estado
+    setTimeout(() => {
+        window.currentCourses = allCourses;
+        window.filteredCourses = allCourses;
+        window.currentView = 'grid';
+        window.currentPage = 1;
+        window.coursesPerPage = 6;
+    }, 100);
+}
+
+// ===== FUNÇÕES AUXILIARES DO CATÁLOGO =====
+
+// Criar card do curso (grid ou lista)
+function createCourseCardHTML(course, view = 'grid') {
+    if (view === 'grid') {
+        return `
+            <div class="course-card" data-course-id="${course.id}" style="
+                background: white;
+                border-radius: var(--radius-lg);
+                overflow: hidden;
+                box-shadow: var(--shadow-md);
+                transition: all var(--transition-normal);
+                cursor: pointer;
+                position: relative;
+            "
+            onmouseover="this.style.transform='translateY(-10px)'; this.style.boxShadow='var(--shadow-xl)'"
+            onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='var(--shadow-md)'"
+            onclick="showCourseDetail(${course.id})">
+                ${course.featured ? `
+                    <div style="
+                        position: absolute;
+                        top: 1rem;
+                        right: 1rem;
+                        background: var(--gradient-accent);
+                        color: white;
+                        padding: 0.5rem 1rem;
+                        border-radius: var(--radius-full);
+                        font-size: 0.8rem;
+                        font-weight: 700;
+                        z-index: 2;
+                        box-shadow: var(--shadow-sm);
+                    ">
+                        <i class="fas fa-star"></i> DESTAQUE
+                    </div>
+                ` : ''}
+                
+                ${course.new ? `
+                    <div style="
+                        position: absolute;
+                        top: 1rem;
+                        left: 1rem;
+                        background: var(--gradient-secondary);
+                        color: white;
+                        padding: 0.5rem 1rem;
+                        border-radius: var(--radius-full);
+                        font-size: 0.8rem;
+                        font-weight: 700;
+                        z-index: 2;
+                        box-shadow: var(--shadow-sm);
+                    ">
+                        <i class="fas fa-bolt"></i> NOVO
+                    </div>
+                ` : ''}
+                
+                <div style="
+                    width: 100%;
+                    height: 180px;
+                    background: linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category)}99 100%);
+                    display: flex;
+                    align-items: center;
+                    justify-content: center;
+                    position: relative;
+                    overflow: hidden;
+                ">
+                    <div style="
+                        position: absolute;
+                        top: 0;
+                        left: 0;
+                        right: 0;
+                        bottom: 0;
+                        background-image: 
+                            radial-gradient(circle at 20% 80%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                            radial-gradient(circle at 80% 20%, rgba(255,255,255,0.05) 0%, transparent 50%);
+                    "></div>
+                    <i class="${course.icon}" style="
+                        font-size: 3.5rem;
+                        color: white;
+                        z-index: 1;
+                        text-shadow: 0 2px 10px rgba(0,0,0,0.2);
+                    "></i>
+                </div>
+                
+                <div style="padding: 1.5rem;">
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: flex-start;
+                        margin-bottom: 0.75rem;
+                    ">
+                        <div>
+                            <div style="
+                                display: inline-block;
+                                background: ${getCategoryColor(course.category)}15;
+                                color: ${getCategoryColor(course.category)};
+                                padding: 0.25rem 0.75rem;
+                                border-radius: var(--radius-full);
+                                font-size: 0.85rem;
+                                font-weight: 600;
+                                margin-bottom: 0.5rem;
+                            ">
+                                ${course.category}
+                            </div>
+                            
+                            <h3 style="
+                                font-family: 'Poppins', sans-serif;
+                                font-size: 1.3rem;
+                                font-weight: 700;
+                                color: var(--dark);
+                                margin-bottom: 0.5rem;
+                                line-height: 1.3;
+                            ">
+                                ${course.title}
+                            </h3>
+                        </div>
+                        
+                        <div style="text-align: right;">
+                            <div style="
+                                font-size: 1.5rem;
+                                font-weight: 800;
+                                color: var(--dark);
+                            ">
+                                R$ ${course.price}
+                            </div>
+                            <div style="
+                                font-size: 0.85rem;
+                                color: var(--gray);
+                            ">
+                                /${course.priceType}
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <p style="
+                        color: var(--gray);
+                        line-height: 1.5;
+                        margin-bottom: 1rem;
+                        font-size: 0.95rem;
+                        height: 45px;
+                        overflow: hidden;
+                    ">
+                        ${course.description}
+                    </p>
+                    
+                    <div style="
+                        display: flex;
+                        justify-content: space-between;
+                        align-items: center;
+                        padding-top: 1rem;
+                        border-top: 1px solid var(--light);
+                    ">
+                        <div style="display: flex; align-items: center; gap: 1rem;">
+                            <div style="display: flex; align-items: center; gap: 0.25rem; color: #f59e0b;">
+                                <i class="fas fa-star"></i>
+                                <span style="font-weight: 700;">${course.rating}</span>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 0.25rem; color: var(--gray); font-size: 0.9rem;">
+                                <i class="fas fa-users"></i>
+                                <span>${course.students}</span>
+                            </div>
+                        </div>
+                        
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            gap: 0.5rem;
+                        ">
+                            <span style="
+                                background: ${course.vacancies > 5 ? 'var(--success-light)' : 'var(--warning-light)'};
+                                color: ${course.vacancies > 5 ? 'var(--success)' : 'var(--warning)'};
+                                padding: 0.25rem 0.5rem;
+                                border-radius: var(--radius-full);
+                                font-size: 0.8rem;
+                                font-weight: 600;
+                            ">
+                                ${course.vacancies} vagas
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <div style="
+                        display: flex;
+                        gap: 0.75rem;
+                        margin-top: 1rem;
+                    ">
+                        <button class="btn btn-primary" style="flex: 1; padding: 0.75rem;" onclick="event.stopPropagation(); showCourseDetail(${course.id})">
+                            <i class="fas fa-eye"></i> Ver Detalhes
+                        </button>
+                        
+                        <button class="btn btn-outline" style="padding: 0.75rem;" onclick="event.stopPropagation(); toggleCourseFavorite(${course.id})" title="Adicionar aos favoritos">
+                            <i class="fas fa-heart"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        `;
+    } else {
+        // View LIST
+        return `
+            <div class="course-card-list" data-course-id="${course.id}" style="
+                background: white;
+                border-radius: var(--radius-lg);
+                box-shadow: var(--shadow-md);
+                transition: all var(--transition-normal);
+                cursor: pointer;
+                position: relative;
+                overflow: hidden;
+            "
+            onmouseover="this.style.transform='translateX(5px)'; this.style.boxShadow='var(--shadow-lg)'"
+            onmouseout="this.style.transform='translateX(0)'; this.style.boxShadow='var(--shadow-md)'"
+            onclick="showCourseDetail(${course.id})">
+                <div style="
+                    display: grid;
+                    grid-template-columns: 120px 1fr auto;
+                    gap: 1.5rem;
+                    align-items: center;
+                ">
+                    <!-- Ícone -->
+                    <div style="
+                        width: 120px;
+                        height: 120px;
+                        background: linear-gradient(135deg, ${getCategoryColor(course.category)} 0%, ${getCategoryColor(course.category)}99 100%);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                        font-size: 2.5rem;
+                        border-radius: var(--radius-md);
+                        margin: 1rem;
+                    ">
+                        <i class="${course.icon}"></i>
+                    </div>
+                    
+                    <!-- Informações -->
+                    <div style="padding: 1rem 0;">
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            gap: 1rem;
+                            margin-bottom: 0.5rem;
+                        ">
+                            <div style="
+                                display: inline-block;
+                                background: ${getCategoryColor(course.category)}15;
+                                color: ${getCategoryColor(course.category)};
+                                padding: 0.25rem 0.75rem;
+                                border-radius: var(--radius-full);
+                                font-size: 0.85rem;
+                                font-weight: 600;
+                            ">
+                                ${course.category}
+                            </div>
+                            
+                            ${course.featured ? `
+                                <span style="
+                                    background: var(--gradient-accent);
+                                    color: white;
+                                    padding: 0.25rem 0.75rem;
+                                    border-radius: var(--radius-full);
+                                    font-size: 0.8rem;
+                                    font-weight: 700;
+                                ">
+                                    <i class="fas fa-star"></i> DESTAQUE
+                                </span>
+                            ` : ''}
+                            
+                            ${course.new ? `
+                                <span style="
+                                    background: var(--gradient-secondary);
+                                    color: white;
+                                    padding: 0.25rem 0.75rem;
+                                    border-radius: var(--radius-full);
+                                    font-size: 0.8rem;
+                                    font-weight: 700;
+                                ">
+                                    <i class="fas fa-bolt"></i> NOVO
+                                </span>
+                            ` : ''}
+                        </div>
+                        
+                        <h3 style="
+                            font-family: 'Poppins', sans-serif;
+                            font-size: 1.4rem;
+                            font-weight: 700;
+                            color: var(--dark);
+                            margin-bottom: 0.5rem;
+                        ">
+                            ${course.title}
+                        </h3>
+                        
+                        <p style="
+                            color: var(--gray);
+                            line-height: 1.5;
+                            margin-bottom: 1rem;
+                            font-size: 0.95rem;
+                        ">
+                            ${course.description}
+                        </p>
+                        
+                        <div style="
+                            display: flex;
+                            align-items: center;
+                            gap: 1.5rem;
+                            color: var(--gray);
+                            font-size: 0.9rem;
+                        ">
+                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                <i class="fas fa-star" style="color: #f59e0b;"></i>
+                                <span style="font-weight: 600;">${course.rating}</span>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                <i class="fas fa-users"></i>
+                                <span>${course.students} alunos</span>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                <i class="fas fa-clock"></i>
+                                <span>${course.duration}</span>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                <i class="fas fa-chalkboard-teacher"></i>
+                                <span>${course.instructor}</span>
+                            </div>
+                            
+                            <div style="display: flex; align-items: center; gap: 0.25rem;">
+                                <i class="fas fa-video"></i>
+                                <span>${course.modality}</span>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Preço e Ações -->
+                    <div style="
+                        display: flex;
+                        flex-direction: column;
+                        align-items: flex-end;
+                        gap: 1rem;
+                        padding: 1rem;
+                        min-width: 200px;
+                    ">
+                        <div style="text-align: right;">
+                            <div style="
+                                font-size: 1.8rem;
+                                font-weight: 800;
+                                color: var(--dark);
+                            ">
+                                R$ ${course.price}
+                            </div>
+                            <div style="
+                                font-size: 0.9rem;
+                                color: var(--gray);
+                            ">
+                                /${course.priceType}
+                            </div>
+                        </div>
+                        
+                        <div style="
+                            display: flex;
+                            gap: 0.75rem;
+                            width: 100%;
+                        ">
+                            <button class="btn btn-primary" style="flex: 1;" onclick="event.stopPropagation(); showCourseDetail(${course.id})">
+                                <i class="fas fa-eye"></i> Detalhes
+                            </button>
+                            
+                            <button class="btn btn-accent" style="flex: 1;" onclick="event.stopPropagation(); showInterestForm(${course.id})">
+                                <i class="fas fa-hand-paper"></i> Interesse
+                            </button>
+                        </div>
+                        
+                        <div style="
+                            display: flex;
+                            gap: 0.5rem;
+                            width: 100%;
+                        ">
+                            <button class="btn btn-outline" style="flex: 1;" onclick="event.stopPropagation(); toggleCourseFavorite(${course.id})">
+                                <i class="fas fa-heart"></i> Favoritar
+                            </button>
+                            
+                            <button class="btn btn-outline" style="flex: 1;" onclick="event.stopPropagation(); shareCourse(${course.id})">
+                                <i class="fas fa-share-alt"></i>
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        `;
+    }
+}
+
+// Buscar cursos
+function searchCourses() {
+    const searchTerm = document.getElementById('courseSearch').value.toLowerCase();
+    filterAndUpdateCourses(searchTerm);
+}
+
+// Filtrar cursos
+function filterCourses() {
+    const category = document.getElementById('filterCategory').value;
+    const modality = document.getElementById('filterModality').value;
+    const price = document.getElementById('filterPrice').value;
+    const duration = document.getElementById('filterDuration').value;
+    const level = document.getElementById('filterLevel').value;
+    const searchTerm = document.getElementById('courseSearch')?.value.toLowerCase() || '';
+    
+    filterAndUpdateCourses(searchTerm, { category, modality, price, duration, level });
+}
+
+// Função principal de filtro
+function filterAndUpdateCourses(searchTerm = '', filters = {}) {
+    let filtered = window.currentCourses || [];
+    
+    // Filtro por busca
+    if (searchTerm) {
+        filtered = filtered.filter(course => 
+            course.title.toLowerCase().includes(searchTerm) ||
+            course.description.toLowerCase().includes(searchTerm) ||
+            course.category.toLowerCase().includes(searchTerm) ||
+            course.instructor.toLowerCase().includes(searchTerm)
+        );
+    }
+    
+    // Filtro por categoria
+    if (filters.category && filters.category !== 'all') {
+        filtered = filtered.filter(course => course.category === filters.category);
+    }
+    
+    // Filtro por modalidade
+    if (filters.modality && filters.modality !== 'all') {
+        filtered = filtered.filter(course => course.modality === filters.modality);
+    }
+    
+    // Filtro por preço
+    if (filters.price && filters.price !== 'all') {
+        if (filters.price === '0') {
+            filtered = filtered.filter(course => course.price === 0);
+        } else if (filters.price === '300+') {
+            filtered = filtered.filter(course => course.price > 300);
+        } else {
+            const maxPrice = parseInt(filters.price);
+            filtered = filtered.filter(course => course.price <= maxPrice);
+        }
+    }
+    
+    // Filtro por duração
+    if (filters.duration && filters.duration !== 'all') {
+        filtered = filtered.filter(course => {
+            const weeks = parseInt(course.duration);
+            if (filters.duration === 'short') return weeks <= 8;
+            if (filters.duration === 'medium') return weeks >= 9 && weeks <= 16;
+            if (filters.duration === 'long') return weeks >= 17;
+            return true;
+        });
+    }
+    
+    // Filtro por nível
+    if (filters.level && filters.level !== 'all') {
+        filtered = filtered.filter(course => course.level === filters.level);
+    }
+    
+    window.filteredCourses = filtered;
+    updateCourseDisplay();
+}
+
+// Atualizar display dos cursos
+function updateCourseDisplay() {
+    const gridContainer = document.getElementById('coursesGrid');
+    const listContainer = document.getElementById('coursesList');
+    const resultsCount = document.getElementById('resultsCount');
+    
+    if (!gridContainer || !listContainer || !resultsCount) return;
+    
+    // Atualizar contador
+    resultsCount.textContent = `${window.filteredCourses.length} cursos encontrados`;
+    
+    // Limpar containers
+    gridContainer.innerHTML = '';
+    listContainer.innerHTML = '';
+    
+    // Adicionar cursos filtrados
+    window.filteredCourses.forEach(course => {
+        gridContainer.innerHTML += createCourseCardHTML(course, 'grid');
+        listContainer.innerHTML += createCourseCardHTML(course, 'list');
+    });
+    
+    // Mostrar mensagem se não houver resultados
+    if (window.filteredCourses.length === 0) {
+        const noResults = `
+            <div style="
+                grid-column: 1 / -1;
+                text-align: center;
+                padding: 4rem 2rem;
+                background: white;
+                border-radius: var(--radius-xl);
+                box-shadow: var(--shadow-md);
+            ">
+                <div style="
+                    font-size: 4rem;
+                    color: var(--light);
+                    margin-bottom: 1.5rem;
+                ">
+                    <i class="fas fa-search"></i>
+                </div>
+                
+                <h2 style="
+                    font-family: 'Poppins', sans-serif;
+                    font-size: 2rem;
+                    font-weight: 700;
+                    color: var(--dark);
+                    margin-bottom: 1rem;
+                ">
+                    Nenhum curso encontrado
+                </h2>
+                
+                <p style="
+                    color: var(--gray);
+                    max-width: 500px;
+                    margin: 0 auto 2rem;
+                    line-height: 1.6;
+                    font-size: 1.1rem;
+                ">
+                    Tente ajustar seus filtros ou buscar por outros termos.
+                </p>
+                
+                <button class="btn btn-primary" onclick="clearCourseFilters()">
+                    <i class="fas fa-filter-circle-xmark"></i> Limpar Filtros
+                </button>
+            </div>
+        `;
+        
+        gridContainer.innerHTML = noResults;
+        listContainer.innerHTML = noResults;
+    }
+}
+
+// Limpar filtros
+function clearCourseFilters() {
+    document.getElementById('filterCategory').value = 'all';
+    document.getElementById('filterModality').value = 'all';
+    document.getElementById('filterPrice').value = 'all';
+    document.getElementById('filterDuration').value = 'all';
+    document.getElementById('filterLevel').value = 'all';
+    document.getElementById('courseSearch').value = '';
+    
+    window.filteredCourses = window.currentCourses;
+    updateCourseDisplay();
+    
+    showNotification('Filtros limpos!', 'success');
+}
+
+// Filtrar por categoria (clicando na categoria)
+function filterByCategory(category) {
+    document.getElementById('filterCategory').value = category;
+    filterCourses();
+    showNotification(`Filtrando por: ${category}`, 'info');
+}
+
+// Mudar visualização (grid/list)
+function changeView(view) {
+    window.currentView = view;
+    const gridContainer = document.getElementById('coursesGrid');
+    const listContainer = document.getElementById('coursesList');
+    const gridBtn = document.getElementById('viewGrid');
+    const listBtn = document.getElementById('viewList');
+    
+    if (view === 'grid') {
+        gridContainer.style.display = 'grid';
+        listContainer.style.display = 'none';
+        gridBtn.style.background = 'var(--primary)';
+        gridBtn.style.color = 'white';
+        gridBtn.style.borderColor = 'var(--primary)';
+        listBtn.style.background = 'white';
+        listBtn.style.color = 'var(--gray)';
+        listBtn.style.borderColor = '#e2e8f0';
+    } else {
+        gridContainer.style.display = 'none';
+        listContainer.style.display = 'flex';
+        gridBtn.style.background = 'white';
+        gridBtn.style.color = 'var(--gray)';
+        gridBtn.style.borderColor = '#e2e8f0';
+        listBtn.style.background = 'var(--primary)';
+        listBtn.style.color = 'white';
+        listBtn.style.borderColor = 'var(--primary)';
+    }
+}
+
+// Ordenar cursos
+function sortCourses() {
+    const sortBy = document.getElementById('sortCourses').value;
+    
+    window.filteredCourses.sort((a, b) => {
+        switch (sortBy) {
+            case 'rating':
+                return b.rating - a.rating;
+            case 'price_asc':
+                return a.price - b.price;
+            case 'price_desc':
+                return b.price - a.price;
+            case 'newest':
+                // Simulação - cursos com flag "new" primeiro
+                if (a.new && !b.new) return -1;
+                if (!a.new && b.new) return 1;
+                return 0;
+            case 'students':
+                return b.students - a.students;
+            default:
+                return 0;
+        }
+    });
+    
+    updateCourseDisplay();
+    showNotification(`Cursos ordenados`, 'info');
+}
+
+// Toggle favorito do curso
+function toggleCourseFavorite(courseId) {
+    const course = window.currentCourses.find(c => c.id === courseId);
+    if (course) {
+        showNotification(`"${course.title}" adicionado aos favoritos!`, 'success');
+        
+        // Animar o botão de coração
+        const heartBtn = event.target.closest('button');
+        if (heartBtn) {
+            heartBtn.innerHTML = '<i class="fas fa-heart" style="color: var(--accent);"></i>';
+            setTimeout(() => {
+                heartBtn.innerHTML = '<i class="fas fa-heart"></i>';
+            }, 1000);
+        }
+    }
+}
+
+// Navegação de página
+function previousPage() {
+    if (window.currentPage > 1) {
+        window.currentPage--;
+        updatePagination();
+        showNotification(`Página ${window.currentPage}`, 'info');
+    }
+}
+
+function nextPage() {
+    const totalPages = Math.ceil(window.filteredCourses.length / window.coursesPerPage);
+    if (window.currentPage < totalPages) {
+        window.currentPage++;
+        updatePagination();
+        showNotification(`Página ${window.currentPage}`, 'info');
+    }
+}
+
+function goToPage(page) {
+    window.currentPage = page;
+    updatePagination();
+    showNotification(`Página ${page}`, 'info');
+}
+
+function updatePagination() {
+    // Implementação simplificada para demonstração
+    const pageBtns = document.querySelectorAll('.page-btn');
+    pageBtns.forEach((btn, index) => {
+        if (index + 1 === window.currentPage) {
+            btn.style.background = 'var(--primary)';
+            btn.style.color = 'white';
+            btn.style.borderColor = 'var(--primary)';
+        } else {
+            btn.style.background = 'white';
+            btn.style.color = 'var(--gray)';
+            btn.style.borderColor = '#e2e8f0';
+        }
+    });
+}
+
+// Bottom Navigation específica do catálogo
+function getCoursesBottomNavHTML() {
+    return `
+        <a class="nav-item" onclick="showHomeScreen()" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--gray);
+            text-decoration: none;
+            min-width: 70px;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--gray)'">
+            <i class="fas fa-home" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Home</span>
+        </a>
+        
+        <a class="nav-item active" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--primary);
+            text-decoration: none;
+            min-width: 70px;
+            background: var(--light);
+        ">
+            <i class="fas fa-book" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Cursos</span>
+        </a>
+        
+        <a class="nav-item" onclick="showFavoritesScreen()" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--gray);
+            text-decoration: none;
+            min-width: 70px;
+            position: relative;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--gray)'">
+            <i class="fas fa-heart" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Favoritos</span>
+            <span style="
+                position: absolute;
+                top: 0.25rem;
+                right: 0.5rem;
+                background: var(--gradient-accent);
+                color: white;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                font-size: 0.7rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+            ">
+                5
+            </span>
+        </a>
+        
+        <a class="nav-item" onclick="showProfileScreen()" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--gray);
+            text-decoration: none;
+            min-width: 70px;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--gray)'">
+            <i class="fas fa-user" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Perfil</span>
+        </a>
+    `;
+}
 // ===== ADICIONAR FUNÇÕES GLOBAIS =====
 // Adicionar estas linhas DEPOIS de toda a função showProfileScreen
 // e ANTES do final do arquivo
@@ -3196,3 +5779,22 @@ function getProfileBottomNavHTML() {
 // window.showSettings = showSettings;
 // window.handleLogout = handleLogout;
 // window.continueCourse = continueCourse;
+// No final do arquivo, junto com as outras window.*
+window.showFavoritesScreen = showFavoritesScreen;
+window.filterFavorites = filterFavorites;
+window.clearFavoritesFilters = clearFavoritesFilters;
+window.removeFromFavorites = removeFromFavorites;
+window.openCourse = openCourse;
+window.showNotification = showNotification;
+// Funções do Catálogo de Cursos
+window.showCoursesScreen = showCoursesScreen;
+window.searchCourses = searchCourses;
+window.filterCourses = filterCourses;
+window.clearCourseFilters = clearCourseFilters;
+window.filterByCategory = filterByCategory;
+window.changeView = changeView;
+window.sortCourses = sortCourses;
+window.toggleCourseFavorite = toggleCourseFavorite;
+window.previousPage = previousPage;
+window.nextPage = nextPage;
+window.goToPage = goToPage;
