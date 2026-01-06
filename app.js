@@ -2251,3 +2251,948 @@ function shareCourse(courseId) {
 function showSchedule() {
     alert('Agenda de aulas completa com:\n• Calendário interativo\n• Horários disponíveis\n• Marcação de aulas experimentais');
 }
+// ===== TELA DE PERFIL DO USUÁRIO =====
+function showProfileScreen() {
+    const user = mockData.currentUser || getDefaultUser();
+    
+    // Cursos que o usuário pratica (mock)
+    const userCourses = [
+        { id: 1, name: "Judo Infantil", progress: 65 },
+        { id: 3, name: "Violão Popular", progress: 30 }
+    ];
+    
+    // Favoritos do usuário (mock)
+    const userFavorites = [
+        { id: 2, name: "Funcional Training 50+", category: "Fitness" },
+        { id: 4, name: "Salsa & Bachata Social", category: "Dança" },
+        { id: 5, name: "Inglês Conversação", category: "Idiomas" }
+    ];
+    
+    // Interesses do usuário (mock com status)
+    const userInterests = [
+        { 
+            id: 6, 
+            name: "Culinária Vegana", 
+            category: "Culinária",
+            status: "Em contato", // Status: Enviado, Em contato, Matriculado
+            date: "15/01/2024"
+        },
+        { 
+            id: 7, 
+            name: "Dança Contemporânea", 
+            category: "Dança",
+            status: "Enviado",
+            date: "10/01/2024"
+        },
+        { 
+            id: 8, 
+            name: "Yoga Meditativo", 
+            category: "Bem-estar",
+            status: "Matriculado",
+            date: "05/01/2024"
+        }
+    ];
+    
+    const app = document.getElementById('app');
+    const userInitials = user.name.split(' ').map(n => n[0]).join('').toUpperCase();
+    
+    app.innerHTML = `
+        <!-- HEADER -->
+        <header class="app-header" style="
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(67, 97, 238, 0.1);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            z-index: 1000;
+        ">
+            <div style="
+                display: flex;
+                justify-content: space-between;
+                align-items: center;
+                max-width: 1200px;
+                margin: 0 auto;
+            ">
+                <!-- Logo e Botão Voltar -->
+                <div style="display: flex; align-items: center; gap: 1rem;">
+                    <button onclick="showHomeScreen()" style="
+                        background: none;
+                        border: none;
+                        font-size: 1.5rem;
+                        color: var(--primary);
+                        cursor: pointer;
+                        padding: 0.5rem;
+                        border-radius: var(--radius-md);
+                        transition: background-color var(--transition-normal);
+                    "
+                    onmouseover="this.style.backgroundColor='var(--light)'"
+                    onmouseout="this.style.backgroundColor='transparent'">
+                        <i class="fas fa-arrow-left"></i>
+                    </button>
+                    
+                    <div style="display: flex; align-items: center; gap: 1rem;">
+                        <div style="
+                            background: var(--gradient-primary);
+                            width: 40px;
+                            height: 40px;
+                            border-radius: var(--radius-md);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                            font-size: 1.2rem;
+                        ">
+                            <i class="fas fa-users"></i>
+                        </div>
+                        <div>
+                            <div style="
+                                font-family: 'Poppins', sans-serif;
+                                font-weight: 700;
+                                font-size: 1.3rem;
+                                background: var(--gradient-primary);
+                                -webkit-background-clip: text;
+                                background-clip: text;
+                                color: transparent;
+                            ">
+                                Comunidade Ativa
+                            </div>
+                            <div style="
+                                font-size: 0.85rem;
+                                color: var(--gray);
+                                margin-top: 2px;
+                            ">
+                                Unidade Einstein
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                
+                <!-- Título da Página -->
+                <div>
+                    <h1 style="
+                        font-family: 'Poppins', sans-serif;
+                        font-size: 1.5rem;
+                        font-weight: 700;
+                        color: var(--dark);
+                    ">
+                        <i class="fas fa-user-circle"></i> Meu Perfil
+                    </h1>
+                </div>
+            </div>
+        </header>
+        
+        <!-- MAIN CONTENT -->
+        <main style="
+            margin-top: 80px;
+            padding: 2rem;
+            max-width: 1000px;
+            margin-left: auto;
+            margin-right: auto;
+            width: 100%;
+            padding-bottom: 100px;
+        ">
+            <!-- Perfil Header -->
+            <section class="animate-fade-up" style="
+                background: var(--gradient-primary);
+                border-radius: var(--radius-xl);
+                padding: 2.5rem;
+                color: white;
+                margin-bottom: 2rem;
+                position: relative;
+                overflow: hidden;
+                box-shadow: var(--shadow-lg);
+                text-align: center;
+            ">
+                <div style="
+                    position: absolute;
+                    top: 0;
+                    left: 0;
+                    right: 0;
+                    bottom: 0;
+                    background-image: 
+                        radial-gradient(circle at 20% 30%, rgba(255,255,255,0.1) 0%, transparent 50%),
+                        radial-gradient(circle at 80% 70%, rgba(255,255,255,0.05) 0%, transparent 50%);
+                "></div>
+                
+                <div style="position: relative; z-index: 1;">
+                    <div style="
+                        width: 120px;
+                        height: 120px;
+                        border-radius: 50%;
+                        background: rgba(255, 255, 255, 0.2);
+                        backdrop-filter: blur(10px);
+                        border: 4px solid white;
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        margin: 0 auto 1.5rem;
+                        font-size: 2.5rem;
+                        font-weight: 700;
+                        color: white;
+                        box-shadow: 0 10px 30px rgba(0,0,0,0.2);
+                    ">
+                        ${userInitials}
+                    </div>
+                    
+                    <h1 style="
+                        font-family: 'Poppins', sans-serif;
+                        font-size: 2.2rem;
+                        font-weight: 800;
+                        margin-bottom: 0.5rem;
+                    ">
+                        ${user.name}
+                    </h1>
+                    
+                    <p style="opacity: 0.9; font-size: 1.1rem;">
+                        <i class="fas fa-award"></i> Membro desde: ${user.createdAt || 'Jan 2024'}
+                    </p>
+                </div>
+            </section>
+            
+            <!-- Grid de Informações -->
+            <div style="
+                display: grid;
+                grid-template-columns: 1fr 1fr;
+                gap: 2rem;
+                margin-bottom: 3rem;
+            ">
+                <!-- Dados Pessoais -->
+                <section class="animate-fade-up">
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        gap: 0.75rem;
+                        margin-bottom: 1.5rem;
+                    ">
+                        <div style="
+                            width: 40px;
+                            height: 40px;
+                            border-radius: var(--radius-md);
+                            background: var(--gradient-primary);
+                            display: flex;
+                            align-items: center;
+                            justify-content: center;
+                            color: white;
+                        ">
+                            <i class="fas fa-id-card"></i>
+                        </div>
+                        <h2 style="
+                            font-family: 'Poppins', sans-serif;
+                            font-size: 1.5rem;
+                            font-weight: 700;
+                            color: var(--dark);
+                        ">
+                            Dados Pessoais
+                        </h2>
+                    </div>
+                    
+                    <div style="
+                        background: white;
+                        border-radius: var(--radius-lg);
+                        padding: 2rem;
+                        box-shadow: var(--shadow-md);
+                    ">
+                        <!-- Nome -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                gap: 0.75rem;
+                                margin-bottom: 0.5rem;
+                            ">
+                                <i class="fas fa-user" style="color: var(--primary);"></i>
+                                <label style="font-weight: 600; color: var(--dark);">Nome Completo</label>
+                            </div>
+                            <div style="
+                                padding: 0.875rem;
+                                background: var(--light);
+                                border-radius: var(--radius-md);
+                                color: var(--dark);
+                                border-left: 4px solid var(--primary);
+                            ">
+                                ${user.name}
+                            </div>
+                        </div>
+                        
+                        <!-- Email -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                gap: 0.75rem;
+                                margin-bottom: 0.5rem;
+                            ">
+                                <i class="fas fa-envelope" style="color: var(--primary);"></i>
+                                <label style="font-weight: 600; color: var(--dark);">E-mail</label>
+                            </div>
+                            <div style="
+                                padding: 0.875rem;
+                                background: var(--light);
+                                border-radius: var(--radius-md);
+                                color: var(--dark);
+                                border-left: 4px solid var(--accent);
+                            ">
+                                ${user.email}
+                            </div>
+                        </div>
+                        
+                        <!-- WhatsApp -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                gap: 0.75rem;
+                                margin-bottom: 0.5rem;
+                            ">
+                                <i class="fab fa-whatsapp" style="color: #25D366;"></i>
+                                <label style="font-weight: 600; color: var(--dark);">WhatsApp</label>
+                            </div>
+                            <div style="
+                                padding: 0.875rem;
+                                background: var(--light);
+                                border-radius: var(--radius-md);
+                                color: var(--dark);
+                                border-left: 4px solid #25D366;
+                            ">
+                                ${user.whatsapp || '(11) 99999-9999'}
+                            </div>
+                        </div>
+                        
+                        <!-- Idade -->
+                        <div style="margin-bottom: 1.5rem;">
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                gap: 0.75rem;
+                                margin-bottom: 0.5rem;
+                            ">
+                                <i class="fas fa-birthday-cake" style="color: var(--warning);"></i>
+                                <label style="font-weight: 600; color: var(--dark);">Idade</label>
+                            </div>
+                            <div style="
+                                padding: 0.875rem;
+                                background: var(--light);
+                                border-radius: var(--radius-md);
+                                color: var(--dark);
+                                border-left: 4px solid var(--warning);
+                            ">
+                                ${user.age || '28 anos'}
+                            </div>
+                        </div>
+                        
+                        <!-- Senha -->
+                        <div>
+                            <div style="
+                                display: flex;
+                                align-items: center;
+                                justify-content: space-between;
+                                margin-bottom: 0.5rem;
+                            ">
+                                <div style="display: flex; align-items: center; gap: 0.75rem;">
+                                    <i class="fas fa-lock" style="color: var(--dark);"></i>
+                                    <label style="font-weight: 600; color: var(--dark);">Senha da Conta</label>
+                                </div>
+                                <button onclick="togglePasswordVisibility()" style="
+                                    background: none;
+                                    border: none;
+                                    color: var(--primary);
+                                    cursor: pointer;
+                                    font-size: 0.9rem;
+                                    display: flex;
+                                    align-items: center;
+                                    gap: 0.25rem;
+                                ">
+                                    <i class="fas fa-eye" id="password-eye"></i>
+                                    <span id="password-text">Mostrar</span>
+                                </button>
+                            </div>
+                            <div style="
+                                padding: 0.875rem;
+                                background: var(--light);
+                                border-radius: var(--radius-md);
+                                color: var(--dark);
+                                border-left: 4px solid var(--dark);
+                                font-family: monospace;
+                            " id="password-field">
+                                ••••••••
+                            </div>
+                        </div>
+                    </div>
+                </section>
+                
+                <!-- Cursos que Pratica -->
+                <section class="animate-fade-up">
+                    <div style="
+                        display: flex;
+                        align-items: center;
+                        justify-content: space-between;
+                        margin-bottom: 1.5rem;
+                    ">
+                        <div style="display: flex; align-items: center; gap: 0.75rem;">
+                            <div style="
+                                width: 40px;
+                                height: 40px;
+                                border-radius: var(--radius-md);
+                                background: var(--gradient-success);
+                                display: flex;
+                                align-items: center;
+                                justify-content: center;
+                                color: white;
+                            ">
+                                <i class="fas fa-dumbbell"></i>
+                            </div>
+                            <h2 style="
+                                font-family: 'Poppins', sans-serif;
+                                font-size: 1.5rem;
+                                font-weight: 700;
+                                color: var(--dark);
+                            ">
+                                Cursos que Pratica
+                            </h2>
+                        </div>
+                        
+                        <span style="
+                            background: var(--light);
+                            color: var(--primary);
+                            padding: 0.25rem 0.75rem;
+                            border-radius: var(--radius-full);
+                            font-weight: 600;
+                        ">
+                            ${userCourses.length} cursos
+                        </span>
+                    </div>
+                    
+                    <div style="
+                        background: white;
+                        border-radius: var(--radius-lg);
+                        padding: 2rem;
+                        box-shadow: var(--shadow-md);
+                        height: 100%;
+                    ">
+                        ${userCourses.length > 0 ? `
+                            <div style="display: flex; flex-direction: column; gap: 1.5rem;">
+                                ${userCourses.map(course => `
+                                    <div style="
+                                        padding: 1.25rem;
+                                        background: var(--light);
+                                        border-radius: var(--radius-md);
+                                        border-left: 4px solid var(--success);
+                                        transition: transform var(--transition-normal);
+                                    "
+                                    onmouseover="this.style.transform='translateX(5px)'"
+                                    onmouseout="this.style.transform='translateX(0)'"
+                                    onclick="showCourseDetail(${course.id})">
+                                        <div style="
+                                            display: flex;
+                                            justify-content: space-between;
+                                            align-items: center;
+                                            margin-bottom: 0.75rem;
+                                        ">
+                                            <h3 style="
+                                                font-family: 'Poppins', sans-serif;
+                                                font-weight: 700;
+                                                color: var(--dark);
+                                                font-size: 1.1rem;
+                                            ">
+                                                ${course.name}
+                                            </h3>
+                                            <span style="
+                                                background: var(--success);
+                                                color: white;
+                                                padding: 0.25rem 0.75rem;
+                                                border-radius: var(--radius-full);
+                                                font-size: 0.85rem;
+                                                font-weight: 600;
+                                            ">
+                                                ${course.progress}%
+                                            </span>
+                                        </div>
+                                        
+                                        <div style="
+                                            height: 6px;
+                                            background: #e2e8f0;
+                                            border-radius: var(--radius-full);
+                                            overflow: hidden;
+                                            margin-bottom: 0.5rem;
+                                        ">
+                                            <div style="
+                                                height: 100%;
+                                                width: ${course.progress}%;
+                                                background: var(--gradient-success);
+                                                border-radius: var(--radius-full);
+                                            "></div>
+                                        </div>
+                                        
+                                        <div style="
+                                            display: flex;
+                                            justify-content: space-between;
+                                            align-items: center;
+                                            color: var(--gray);
+                                            font-size: 0.9rem;
+                                        ">
+                                            <span>
+                                                <i class="fas fa-chart-line"></i> Progresso
+                                            </span>
+                                            <button onclick="event.stopPropagation(); continueCourse(${course.id})" style="
+                                                background: none;
+                                                border: none;
+                                                color: var(--primary);
+                                                cursor: pointer;
+                                                font-weight: 600;
+                                                display: flex;
+                                                align-items: center;
+                                                gap: 0.25rem;
+                                                padding: 0.25rem 0.5rem;
+                                                border-radius: var(--radius-md);
+                                                transition: background-color var(--transition-normal);
+                                            "
+                                            onmouseover="this.style.backgroundColor='rgba(37, 99, 235, 0.1)'"
+                                            onmouseout="this.style.backgroundColor='transparent'">
+                                                Continuar <i class="fas fa-arrow-right"></i>
+                                            </button>
+                                        </div>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        ` : `
+                            <div style="
+                                text-align: center;
+                                padding: 3rem 1rem;
+                                color: var(--gray);
+                            ">
+                                <div style="font-size: 3rem; color: var(--light); margin-bottom: 1rem;">
+                                    <i class="fas fa-book-open"></i>
+                                </div>
+                                <h3 style="
+                                    font-family: 'Poppins', sans-serif;
+                                    font-weight: 600;
+                                    color: var(--dark);
+                                    margin-bottom: 0.5rem;
+                                ">
+                                    Nenhum curso em andamento
+                                </h3>
+                                <p style="margin-bottom: 1.5rem;">
+                                    Comece um novo curso e aparecerá aqui!
+                                </p>
+                                <button class="btn btn-primary" onclick="showCoursesScreen()">
+                                    <i class="fas fa-search"></i> Explorar Cursos
+                                </button>
+                            </div>
+                        `}
+                    </div>
+                </section>
+            </div>
+            
+            <!-- Ações do Perfil -->
+            <section class="animate-fade-up">
+                <h2 style="
+                    font-family: 'Poppins', sans-serif;
+                    font-size: 1.5rem;
+                    font-weight: 700;
+                    color: var(--dark);
+                    margin-bottom: 1.5rem;
+                    display: flex;
+                    align-items: center;
+                    gap: 0.75rem;
+                ">
+                    <div style="
+                        width: 40px;
+                        height: 40px;
+                        border-radius: var(--radius-md);
+                        background: var(--gradient-secondary);
+                        display: flex;
+                        align-items: center;
+                        justify-content: center;
+                        color: white;
+                    ">
+                        <i class="fas fa-bolt"></i>
+                    </div>
+                    Ações Rápidas
+                </h2>
+                
+                <div style="
+                    display: grid;
+                    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+                    gap: 1.5rem;
+                ">
+                    <!-- Meus Interesses -->
+                    <div class="action-card" onclick="showMyInterests()" style="
+                        text-align: center;
+                        padding: 2rem;
+                        border: 2px solid var(--primary-light);
+                    ">
+                        <div style="
+                            font-size: 2.5rem;
+                            color: var(--primary);
+                            margin-bottom: 1rem;
+                        ">
+                            <i class="fas fa-hand-paper"></i>
+                        </div>
+                        <h3 style="
+                            font-family: 'Poppins', sans-serif;
+                            font-size: 1.3rem;
+                            font-weight: 700;
+                            color: var(--dark);
+                            margin-bottom: 0.5rem;
+                        ">
+                            Meus Interesses
+                        </h3>
+                        <p style="color: var(--gray); margin-bottom: 1.5rem;">
+                            ${userInterests.length} cursos com interesse
+                        </p>
+                        <div style="
+                            background: var(--light);
+                            padding: 0.5rem;
+                            border-radius: var(--radius-md);
+                            margin-bottom: 1rem;
+                        ">
+                            <div style="
+                                display: flex;
+                                justify-content: center;
+                                gap: 0.5rem;
+                                flex-wrap: wrap;
+                            ">
+                                ${userInterests.map(interest => `
+                                    <span style="
+                                        background: ${getStatusColor(interest.status)};
+                                        color: white;
+                                        padding: 0.25rem 0.5rem;
+                                        border-radius: var(--radius-full);
+                                        font-size: 0.75rem;
+                                        font-weight: 600;
+                                    ">
+                                        ${interest.status}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <button class="btn btn-primary">
+                            Ver Todos <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Cursos Favoritados -->
+                    <div class="action-card" onclick="showMyFavorites()" style="
+                        text-align: center;
+                        padding: 2rem;
+                        border: 2px solid var(--accent-light);
+                    ">
+                        <div style="
+                            font-size: 2.5rem;
+                            color: var(--accent);
+                            margin-bottom: 1rem;
+                        ">
+                            <i class="fas fa-heart"></i>
+                        </div>
+                        <h3 style="
+                            font-family: 'Poppins', sans-serif;
+                            font-size: 1.3rem;
+                            font-weight: 700;
+                            color: var(--dark);
+                            margin-bottom: 0.5rem;
+                        ">
+                            Cursos Favoritados
+                        </h3>
+                        <p style="color: var(--gray); margin-bottom: 1.5rem;">
+                            ${userFavorites.length} cursos salvos
+                        </p>
+                        <div style="
+                            background: var(--light);
+                            padding: 0.5rem;
+                            border-radius: var(--radius-md);
+                            margin-bottom: 1rem;
+                        ">
+                            <div style="
+                                display: flex;
+                                justify-content: center;
+                                gap: 0.5rem;
+                                flex-wrap: wrap;
+                            ">
+                                ${userFavorites.map(fav => `
+                                    <span style="
+                                        background: var(--accent-light);
+                                        color: var(--accent);
+                                        padding: 0.25rem 0.5rem;
+                                        border-radius: var(--radius-full);
+                                        font-size: 0.75rem;
+                                        font-weight: 600;
+                                    ">
+                                        ${fav.category}
+                                    </span>
+                                `).join('')}
+                            </div>
+                        </div>
+                        <button class="btn btn-accent">
+                            Ver Favoritos <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Configurações -->
+                    <div class="action-card" onclick="showSettings()" style="
+                        text-align: center;
+                        padding: 2rem;
+                        border: 2px solid var(--gray-light);
+                    ">
+                        <div style="
+                            font-size: 2.5rem;
+                            color: var(--gray);
+                            margin-bottom: 1rem;
+                        ">
+                            <i class="fas fa-cog"></i>
+                        </div>
+                        <h3 style="
+                            font-family: 'Poppins', sans-serif;
+                            font-size: 1.3rem;
+                            font-weight: 700;
+                            color: var(--dark);
+                            margin-bottom: 0.5rem;
+                        ">
+                            Configurações
+                        </h3>
+                        <p style="color: var(--gray); margin-bottom: 1.5rem;">
+                            Editar dados e preferências
+                        </p>
+                        <button class="btn btn-outline">
+                            Configurar <i class="fas fa-sliders-h"></i>
+                        </button>
+                    </div>
+                    
+                    <!-- Sair -->
+                    <div class="action-card" onclick="handleLogout()" style="
+                        text-align: center;
+                        padding: 2rem;
+                        border: 2px solid var(--danger-light);
+                        cursor: pointer;
+                    ">
+                        <div style="
+                            font-size: 2.5rem;
+                            color: var(--danger);
+                            margin-bottom: 1rem;
+                        ">
+                            <i class="fas fa-sign-out-alt"></i>
+                        </div>
+                        <h3 style="
+                            font-family: 'Poppins', sans-serif;
+                            font-size: 1.3rem;
+                            font-weight: 700;
+                            color: var(--dark);
+                            margin-bottom: 0.5rem;
+                        ">
+                            Sair da Conta
+                        </h3>
+                        <p style="color: var(--gray); margin-bottom: 1.5rem;">
+                            Encerrar sessão atual
+                        </p>
+                        <button class="btn btn-danger">
+                            Sair <i class="fas fa-sign-out-alt"></i>
+                        </button>
+                    </div>
+                </div>
+            </section>
+        </main>
+        
+        <!-- BOTTOM NAV -->
+        <nav style="
+            position: fixed;
+            bottom: 0;
+            left: 0;
+            right: 0;
+            background: rgba(255, 255, 255, 0.95);
+            backdrop-filter: blur(10px);
+            border-top: 1px solid rgba(67, 97, 238, 0.1);
+            padding: 0.75rem 0;
+            z-index: 1000;
+        ">
+            <div style="
+                display: flex;
+                justify-content: space-around;
+                max-width: 500px;
+                margin: 0 auto;
+            ">
+                ${getProfileBottomNavHTML()}
+            </div>
+        </nav>
+    `;
+}
+
+// ===== FUNÇÕES AUXILIARES DO PERFIL =====
+
+// Função para obter usuário padrão
+function getDefaultUser() {
+    return {
+        name: "João Silva",
+        email: "aluno@email.com",
+        whatsapp: "(11) 98888-8888",
+        age: "28 anos",
+        createdAt: "Jan 2024"
+    };
+}
+
+// Função para obter cor do status
+function getStatusColor(status) {
+    const colors = {
+        'Enviado': 'var(--primary)',
+        'Em contato': 'var(--warning)',
+        'Matriculado': 'var(--success)'
+    };
+    return colors[status] || 'var(--gray)';
+}
+
+// Alternar visibilidade da senha
+function togglePasswordVisibility() {
+    const passwordField = document.getElementById('password-field');
+    const passwordEye = document.getElementById('password-eye');
+    const passwordText = document.getElementById('password-text');
+    
+    if (passwordField.textContent === '••••••••') {
+        passwordField.textContent = 'aluno123';
+        passwordEye.className = 'fas fa-eye-slash';
+        passwordText.textContent = 'Ocultar';
+    } else {
+        passwordField.textContent = '••••••••';
+        passwordEye.className = 'fas fa-eye';
+        passwordText.textContent = 'Mostrar';
+    }
+}
+
+// Mostrar Meus Interesses
+function showMyInterests() {
+    alert('Tela "Meus Interesses" será implementada com:\n• Lista de cursos interessados\n• Status: Enviado, Em contato, Matriculado\n• Histórico de interações');
+}
+
+// Mostrar Meus Favoritos
+function showMyFavorites() {
+    alert('Tela "Meus Favoritos" será implementada com:\n• Lista completa de cursos favoritados\n• Organização por categoria\n• Acesso rápido aos cursos');
+}
+
+// Mostrar Configurações
+function showSettings() {
+    alert('Tela "Configurações" será implementada com:\n• Edição de dados pessoais\n• Configurações de notificação\n• Privacidade e segurança\n• Opção de excluir conta');
+}
+
+// Logout
+function handleLogout() {
+    if (confirm('Tem certeza que deseja sair da sua conta?')) {
+        mockData.currentUser = null;
+        showWelcomeScreen();
+    }
+}
+
+// Continuar Curso
+function continueCourse(courseId) {
+    alert(`Continuando curso ID: ${courseId}\n\nRedirecionando para a próxima aula...`);
+    // Na implementação real, redirecionaria para a aula
+}
+
+// Bottom Navigation específica do perfil
+function getProfileBottomNavHTML() {
+    return `
+        <a class="nav-item" onclick="showHomeScreen()" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--gray);
+            text-decoration: none;
+            min-width: 70px;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--gray)'">
+            <i class="fas fa-home" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Home</span>
+        </a>
+        
+        <a class="nav-item" onclick="showCoursesScreen()" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--gray);
+            text-decoration: none;
+            min-width: 70px;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--gray)'">
+            <i class="fas fa-book" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Cursos</span>
+        </a>
+        
+        <a class="nav-item" onclick="showFavoritesScreen()" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--gray);
+            text-decoration: none;
+            min-width: 70px;
+            position: relative;
+        "
+        onmouseover="this.style.backgroundColor='var(--light)'; this.style.color='var(--primary)'"
+        onmouseout="this.style.backgroundColor='transparent'; this.style.color='var(--gray)'">
+            <i class="fas fa-heart" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Favoritos</span>
+            <span style="
+                position: absolute;
+                top: 0.25rem;
+                right: 0.5rem;
+                background: var(--gradient-accent);
+                color: white;
+                width: 18px;
+                height: 18px;
+                border-radius: 50%;
+                font-size: 0.7rem;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-weight: 700;
+            ">
+                3
+            </span>
+        </a>
+        
+        <a class="nav-item active" style="
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 0.25rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            cursor: pointer;
+            transition: all var(--transition-normal);
+            color: var(--primary);
+            text-decoration: none;
+            min-width: 70px;
+            background: var(--light);
+        ">
+            <i class="fas fa-user" style="font-size: 1.3rem;"></i>
+            <span style="font-size: 0.75rem; font-weight: 600;">Perfil</span>
+        </a>
+    `;
+}
+
+// ===== ADICIONAR FUNÇÕES GLOBAIS =====
+// Adicionar estas linhas DEPOIS de toda a função showProfileScreen
+// e ANTES do final do arquivo
+
+// window.showProfileScreen = showProfileScreen;
+// window.togglePasswordVisibility = togglePasswordVisibility;
+// window.showMyInterests = showMyInterests;
+// window.showMyFavorites = showMyFavorites;
+// window.showSettings = showSettings;
+// window.handleLogout = handleLogout;
+// window.continueCourse = continueCourse;
